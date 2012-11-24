@@ -203,10 +203,10 @@ stab using week12 [aw=dweight], replace ///
 * -------------------------------------
 
 * Line graph using DV means computed for each age and gender group.
-cap drop msat*
+cap drop msat?
 bys cntry age6: egen msat1 = mean(hsat) if female
 bys cntry age6: egen msat2 = mean(hsat) if !female
-tw conn msat1 msat2 age6, by(cntry, note("")) ///
+tw conn msat? age6, by(cntry, note("")) ///
     xti("Age") yti("Mean level of satisfaction") ///
     legend(row(1) order(1 "Female" 2 "Male")) ///
     name(hsat_age_sex, replace)
