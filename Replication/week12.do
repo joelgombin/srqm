@@ -43,7 +43,7 @@ foreach p in estout fre leanout {
 }
 
 * Log results.
-cap log using "week12.log", replace
+cap log using "Replication/week12.log", replace
 
 
 * ====================
@@ -122,11 +122,11 @@ la var pol3 "Political views (1=left 3=right)"
 misstable pat hsat age6 female health pol3 lowinc if cntry=="FR"
 misstable pat hsat age6 female health pol3 lowinc if cntry=="GB"
 
-* 0- case studies.
+* Select case studies.
 keep if inlist(cntry,"FR","GB")
 
 * Delete incomplete observations.
-drop if mi(hsat,age6,female,health,pol3,lowinc)
+drop if mi(hsat, age6, female, health, pol3, lowinc)
 
 * Final sample sizes.
 bys cntry: count
@@ -174,14 +174,14 @@ gladder hsat1, bin(11) ///
 * problems with the -stab- command, please send a detailed email on the issue.
 
 stab using week12 [aw=dweight], replace ///
-    su(hsat) corr ///
+    su(hsat) ///
     fr(female age6 health lowinc pol3) ///
     by(cntry)
 
 /* Basic syntax of -stab- command:
 
  - 'using name'  adds the 'name' prefix to the exported file(s)
- - 'su()'        summarizes a list of continuous variables (mean, sd, min-max)
+ - 'sum()'        summarizes a list of continuous variables (mean, sd, min-max)
  - 'fre()'       summarizes a list of categorical variables (frequencies)
  - 'corr'        adds a correlation matrix of continuous variables
  - 'by'          produces several tables over a given categorical variable
