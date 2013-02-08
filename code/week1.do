@@ -6,7 +6,7 @@
    Hi! Welcome to your first SRQM do-file.
 
  - You are probably viewing this file from the Stata do-file editor, after
-   opening it with the 'doedit replication/week1' command. If so, you are
+   opening it with the -doedit code/week1- command. If so, you are
    doing it right: congratulations!
    
  - You will be reading through your first do-file in just a minute. It is
@@ -21,7 +21,7 @@
    research project. Practice with Stata by trying out commands as you learn
    them. If things do not work out, try again after checking the command syntax.
 
-   Last updated 2013-01-25.
+   Last updated 2013-02-08.
 
 ----------------------------------------------------------------------------- */
 
@@ -33,6 +33,23 @@
 * green colour in the Stata do-file editor. This do-file is fully commented
 * to guide you through the basics. In your own code, you should also use
 * comments to document and section your operations.
+
+// note: lines or chunks of code that start with '//' are also comments, ...
+
+/* and blocks of code that start with that symbol
+   and end with the reverse one are also comments */
+
+// ... and Stata helps you to detect comments by coloring them in green.
+
+* When you see the words 'uncomment to run', it means 'remove the comment to run
+* the code'. Remove the asterisk and trailing space on the next line, then run 
+* it by copy-pasting it into the Command window and pressing Enter:
+
+* di "Hello world."
+
+* When I cite a Stata command in the comments, I cite it -between dashes-, but
+* the dashes are not part of the command. They are just here to delimit where
+* the command starts and where it stops.
 
 
 * Practice
@@ -105,7 +122,7 @@ sc lexp safewater
 clear
 
 * Notice that the syntax used for the -scatter- command is different because
-* it has been abbreviated to 'sc'. The first line is a comment that uses an
+* it has been abbreviated to -sc-. The first line is a comment that uses an
 * alternative way to tell Stata that the line is a comment. Save and close
 * the do-file window when you have copied the full code to it.
 
@@ -147,25 +164,43 @@ clear
 
 clear
 set obs 100
-gen test=1
+gen test = 1
 ren test x // This line will not run if you do not run the previous ones first.
            // The command intends to rename the 'test' variable, but 'test' does
            // not exist unless you create it first by running the previous line.
 
 
-* Tip (3): Keyboard shortcuts for Mac (Win)
+* Tip (3): Keyboard shortcuts for Mac / Win
 * -----------------------------------------
 
-* - Cmmd-L (Ctrl-L) selects a whole line
-* - Shift + Up/Down arrows selects or deselects neighbouring lines
-* - Cmmd-Shift-D (Ctrl-D) executes the selection
-* - Cmmd-` (Alt-Tab) switches between application windows
+/* Mac:
 
-* If you get lost while replicating a do-file, the safest option is to run it
-* again from the top. To do that, keyboard shortcuts make your life easy: from
-* the line where you want to start again, just press Cmmd-L (Ctrl-L), then
-* Cmmd-Shift-Up (Ctrl-Shift-Up), and finally press Cmmd-Shift-D (Ctrl-D) to
-* rerun the code down to your initial line.
+   - Cmd-L (Ctrl-L) selects a whole line
+   - Shift + Up/Down arrows selects or deselects neighbouring lines
+   - Cmd-Shift-D (Ctrl-D) executes the selection
+   - Cmd-` (Alt-Tab) switches between application windows
+
+   Cmd is the 'Command' key. The ` ('back accent') key might be hard to
+   find on non-QWERTY keyboards, so check if you see it on your system.
+
+   Win:
+
+   - Ctrl-L selects a whole line
+   - Shift + Up/Down arrows selects or deselects neighbouring lines
+   - Ctrl-D executes the selection
+   - Alt-Tab switches between application windows */
+   
+* Do not confuse Mac and Win keyboard shortcuts, or you might execute the whole
+* do-file by mistake! If that happens, or if you get lost while replicating a 
+* do-file, the safest option is to run it again from the top. To do that, make
+* your life easier with keyboard shortcuts: select the line where you want to
+* start again by pressing Cmd-L (Win: Ctrl-L), then press Cmd-Shift-UpArrow
+* (Win: Ctrl-Shift-UpArrow), and finally press Cmd-Shift-D (Win: Ctrl-D) to run
+* the code again down to your initial line.
+
+* Yes, all this takes a bit of practice. Think of it as music: learning to read
+* and write code is like learning to read and write music sheets, and learning 
+* to type and run code is like learning a bit of piano.
 
 
 * Tip (4): Command navigation
@@ -188,17 +223,18 @@ ren test x // This line will not run if you do not run the previous ones first.
 
 * When you see '///' at the end of a line, you have to select the next line too
 * and execute the lines together from the do-file: copy-pasting to the Command
-* window will not work. Use Ctrl-L (Win) or Cmmd-L (Mac) and Shift+DownArrow to
-* select the lines, then run them with Ctrl-D (Win) or Cmmd-Shift-D (Mac).
+* window will not work. Use Ctrl-L (Win) or Cmd-L (Mac) and Shift+DownArrow to
+* select the lines, then run them with Ctrl-D (Win) or Cmd-Shift-D (Mac).
 
-di "This is a test. Execute me by selecting this line, " ///
-    "and this line too, " _newline ///
-    "and this line too. Well done :)"
+di "This is a test. Select this line, " ///
+    "and this line too, " _n ///
+    "and this line too. Now, execute from the keyboard. Well done :)"
 
 * You will have to do the same for code loops, such as 'foreach {}' loops.
 * You will usually be warned before in the comments. Finally, note that these
 * multiple-line commands do *not* work if you copy-paste from the do-file to
-* the Command window.
+* the Command window. This is why I recommend that you learn keyboard shortcuts
+* quickly, so as to minimize issues with code execution and focus on the rest.
 
 
 * =========
@@ -283,12 +319,12 @@ ado de fre
 * datasets or logs. Use the -pwd- command to see where Stata is looking now.
 pwd
 
-* Use 'ls' command to list the files where Stata is looking. The 'w' option will
+* Use -ls- command to list the files where Stata is looking. The -w- option will
 * cause the command to print only the filenames without system information.
 ls, w
 
 * For this course, you need to set the working directory to the SRQM folder.
-* Use the 'File > Change Working Directory...' menu item in the Stata graphical
+* Use the 'File :: Change Working Directory...' menu item in the Stata graphical
 * user interface to select the SRQM folder. The path to that folder will show in
 * the Results window. It might look like this:
 
@@ -317,9 +353,8 @@ ls, w
 * cd ..
 
 * Finally, you can list the files without moving to a directory. The following
-* command shows the contents of the Replication folder:
-
-ls "Replication", w
+* command shows the contents of the data/ folder:
+ls data/, w
 
 
 * (5) Log
@@ -334,9 +369,9 @@ log using code/week1.log, replace
 * their results, including commands that returned an error. Refer to the Stata
 * Guide for further guidance on log files, and do not forget to produce logs in
 * the .log plain text format rather than in the less handy SMCL default format.
-* Also make sure that you specify the 'replace' option to overwite any previous
+* Also make sure that you specify the -replace- option to overwite any previous
 * log file that might have been created by running this do-file in the past.
-* The 'name' option can be omitted.
+* The -name- option can be omitted.
 
 * Now run these example commands (do not worry about the comments, you can leave
 * them where they are and 'execute' them too, Stata will just ignore them):
@@ -344,11 +379,14 @@ log using code/week1.log, replace
 * Loading data from the U.S. National Health Interview Survey (2009).
 use data/nhis2009, clear
 
-* The 'clear' option gets rid of any data previously loaded into memory, since
+* The -clear- option gets rid of any data previously loaded into memory, since
 * Stata can only open one dataset at once.
 
-d year sex weight raceb  // describe a few variables
-keep if year==2009       // keep observations for year 2009
+* Describe a few variables.
+d year sex weight raceb
+
+* Keep observations only for year 2009.    
+keep if year == 2009
 
 * Calculate the frequencies for each racial-ethnic group.
 fre raceb
@@ -360,20 +398,21 @@ su weight
 tab sex
 
 * Crosstabulate sex and race.
-tab raceb
+tab sex raceb
 
-* Plot average weight by sex and race.
-gr dot weight, over(raceb) over(sex) name(weight_race_sex, replace)
+* Plot average weight by sex and race. You must run both lines below together.
+gr dot weight, over(raceb) over(sex) ///
+	name(weight_race_sex, replace)
 
 * To close the log file previously opened, type the following command:
 cap log close
 
-* You will not be able to run the above command if no log is opened. The 'cap'
+* You will not be able to run the above command if no log is opened. The -cap-
 * prefix allows you to run the command and continue even if it returns an error.
 
-* If you now go to your 'Replication' folder and open the week1.log file with
+* If you now go to your code/ folder and open the week1.log file with
 * any plain text editor, you will find a copy of everything that was entered
-* between the 'log using' and 'log close' commands, including comments, the
+* between the -log using- and -log close- commands, including comments, the
 * example above and its output for each command. You can view the file in Stata:
 view code/week1.log
 
@@ -392,35 +431,107 @@ help graph
 * ============
 
 
+* (1) List datasets
+* -----------------
+
 * Show all datasets for this course. The asterisk in the command is an escape
 * character that causes the command to return all matches (within .dta files).
-* The 'w' option is to make the output less verbose. Quotes are optional here.
+* The -w- option is to make the output less verbose.
 ls "data/*.dta", w
 
-* All datasets are in the SRQM Teaching Pack, and will load only if your working
-* directory is correctly set. The README file of the Datasets folder holds links
-* to essential documents for you to read if you want to use the data for your
-* research project. You can start looking for variables of interest by using the
-* lookfor command after loading one of the course datasets.
+* Note: the quotes in the command above are optional. Quotes are only required
+* when the path contains spaces. For example, if the data/ folder were called
+* 'Course datasets', quotes would be necessary to run -ls "Course datasets"-.
+* This means that, if the path to your working directory contains quotes, you
+* must enclose it in quotes if you use -cd- to set your working directory.
 
+* Typical example.
+* cd "/Users/somestudent/Documents/Sciences Po/4A/Semester 1/Stats stuff/SRQM"
+
+* Now back to the datasets.
+
+* All datasets are in the data/ folder of the SRQM Teaching Pack. The commands
+* used to load them in the course do-files will work only if you have correctly
+* set your working directory to the SRQM folder first. The course setup does it
+* for you, unless you move the SRQM folder, in which case it will stop working.
+
+* The README file of the data/ folder holds links to essential documents for you
+* to read if you want to use the data for your research project. You can start 
+* looking for variables of interest by using the -lookfor- command after loading
+* one of the course datasets.
+
+
+* (2) European Social Survey Round 4, 2008
+* ----------------------------------------
+
+* Load.
 use data/ess2008, clear
+
+* Example search.
 lookfor health immig
 
+
+* (3) Quality of Government, 2011
+* -------------------------------
+
+* Load.
 use data/qog2011, clear
+
+* Example search.
 lookfor devel orig
 
+
+* (4) World Values Survey, 2000
+* -----------------------------
+
+* Load.
 use data/wvs2000, clear
+
+* Example search.
 lookfor army homo
 
-// etc. (this line is also a comment)
+
+* (5) General Social Survey, 2010
+* -------------------------------
+
+* Load.
+use data/gss2010, clear
+
+* Example search.
+lookfor army homo
+
+* Note that this dataset holds more than one year of data.
+tab year
+
+* This means that you will have to reduce it to one year of observations before
+* analyzing it. More on that next week. For now, back to looking for variables.
+
+
+* (6) Search across datasets
+* --------------------------
 
 * Tip: an additional package can help you search for variables across datasets.
 * It should have been installed by the course setup utility. If not, install it
-* yourself
+* yourself with -ssc install lookfor_all- (requires an Internet connection).
 lookfor_all health, dir(data)
 
 * The command above, like all commands that calls datasets or do-files,
 * requires that the SRQM folder has been set as the working directory.
+
+* Because some commands like -lookfor_all- require to be installed before you
+* run the course do-files, the course setup utility has installed them in our
+* first session together. However, by security, I also include a small loop in
+* all course do-files that automatically detect uninstalled commands and fetch
+* them from online if needed. These loops look like the one below and require
+* that you select all four lines together and then execute them.
+foreach p in lookfor_all {
+	cap which `p'
+	if _rc == 111 cap noi ssc install `p'
+}
+
+* The syntax of these loops is typically more complex than anything that you
+* will have to read or write for this course, so do not panic if they do not
+* make sense to you. Focus on getting the rest of the code straight.
 
 
 * ========
@@ -433,19 +544,19 @@ lookfor_all health, dir(data)
 * you should also learn to use internal Stata help pages, accessible with the
 * -help- command. If you want to understand the following command:
 *
-* su weight if raceb==1, d
+* su weight if raceb == 1, d
 
-* To understand what 'su' means and does, type -help- followed by 'su':
+* To understand what -su- means and does, type -help- followed by -su-:
 help su
 
-* The underline tells you that 'su' is shorthand for -summarize-, which returns
+* The underline tells you that -su- is shorthand for -summarize-, which returns
 * a few summary statistics for one or more variables. The -help- command itself
-* can be abbreviated to simply 'h'. The 'if' component of the command is also
+* can be abbreviated to simply -h-. The -if- component of the command is also
 * documented in Stata:
 h if
 
-* Finally, the 'd' option shown in the example is documented on the help page
-* for -summarize-. It produces more statistics: 'd' is shorthand for 'detail'.
+* Finally, the -d- option shown in the example is documented on the help page
+* for -summarize-. It produces more statistics: -d- is shorthand for -detail-.
 * Do not confuse it with the -d- shorthand  for the -describe- command, which
 * lists the variables in the current dataset.
 
@@ -459,6 +570,7 @@ h if
 * do-file. If you combine practice, documentation and a bit of intuition, you
 * can learn most of the Stata syntax in a few weeks through trial-and-error.
 * Get ready by practicing as soon as possible! Programming works that way.
+* Oh, and congratulations for reaching this line.
 
 * Last words: when you leave Stata, DO NOT SAVE YOUR DATASET. Keep it intact as
 * originally downloaded. Instead, save the do-file that contains the commands

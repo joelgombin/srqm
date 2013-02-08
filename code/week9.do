@@ -1,5 +1,5 @@
 
-/* ------------------------------------------ SRQM Session 12 ------------------
+/* ------------------------------------------ SRQM Session 9 -------------------
 
    F. Briatte and I. Petev
 
@@ -39,11 +39,11 @@
 * Install required commands.
 foreach p in estout fre spineplot {
 	cap which `p'
-	if _rc==111 cap noi ssc install `p'
+	if _rc == 111 cap noi ssc install `p'
 }
 
 * Log results.
-cap log using "week9.log", replace
+cap log using code/week9.log, replace
 
 
 * ====================
@@ -93,7 +93,7 @@ gr hbar hsat11_*, over(cntry, sort(1)des) stack legend(off) ///
 fre agea gndr health hincfel lrscale, r(10)
 
 * Recode sex to dummy.
-gen female:female = (gndr==2) if !mi(gndr)
+gen female:female = (gndr == 2) if !mi(gndr)
 la de female 0 "Male" 1 "Female", replace
 la var female "Gender"
 
@@ -111,16 +111,16 @@ gen lowinc = (hincfel > 2) if !mi(hincfel)
 la var lowinc "Subjective low income"
 
 * Recode left-right scale.
-recode lrscale (0/4=1 "Left") (5=2 "Centre") (6/10=3 "Right"), gen(pol3)
-la var pol3 "Political views (1=left 3=right)"
+recode lrscale (0/4 = 1 "Left") (5 = 2 "Centre") (6/10 = 3 "Right"), gen(pol3)
+la var pol3 "Political views (1 = left 3 = right)"
 
 
 * Subsetting
 * ----------
 
 * Check missing values.
-misstable pat hsat age6 female health pol3 lowinc if cntry=="FR"
-misstable pat hsat age6 female health pol3 lowinc if cntry=="GB"
+misstable pat hsat age6 female health pol3 lowinc if cntry == "FR"
+misstable pat hsat age6 female health pol3 lowinc if cntry == "GB"
 
 * Select case studies.
 keep if inlist(cntry,"FR","GB")
@@ -169,29 +169,29 @@ gladder hsat1, bin(11) ///
 * -------------------------
 
 * The next command is part of the SRQM folder. If Stata returns an error when
-* you run it, set the folder as your working directory and type 'run profile'
+* you run it, set the folder as your working directory and type -run profile-
 * to run the course setup, then try the command again. If you still experience
 * problems with the -stab- command, please send a detailed email on the issue.
 
-stab using week12 [aw=dweight], replace ///
+stab using week9, replace ///
     su(hsat) ///
     fr(female age6 health lowinc pol3) ///
     by(cntry)
 
 /* Basic syntax of -stab- command:
 
- - 'using name'  adds the 'name' prefix to the exported file(s)
- - 'sum()'        summarizes a list of continuous variables (mean, sd, min-max)
- - 'fre()'       summarizes a list of categorical variables (frequencies)
- - 'corr'        adds a correlation matrix of continuous variables
- - 'by'          produces several tables over a given categorical variable
- - 'replace'     overwrite previous tables
- - '[aw,fw]'     use survey weights
+- argument: -using NAME-  adds the NAME prefix to the exported file(s)
+- argument: -su()-        summarizes a list of continuous variables (mean, sd, min-max)
+- argument: -fre()-       summarizes a list of categorical variables (frequencies)
 
-   In the example above, the -stab- command will export two files to the working
-   directory, containing summary statistics for France (week12_stats_FR.txt) and
-   Britain (week12_stats_GB.txt). If the research examines continuous variables,
-   add the 'corr' option to also export a correlation matrix, as shown here. */
+- option:   -by-          produces several tables over a given categorical variable
+- option:   -replace-     overwrite any previously existing tables
+- option:   [aw, fw]      use survey weights (use only if you know how they work)
+
+  In the example above, the -stab- command will export two files to the working
+  directory, containing summary statistics for France (week9_stats_FR.txt) and
+  Britain (week9_stats_GB.txt). If the research examines continuous variables,
+  add the -corr- option to export a correlation matrix (shown next week). */
 
 
 * =====================
@@ -224,8 +224,8 @@ hist hsat, normal discrete by(cntry age6, col(3) note("") legend(off)) ///
 * Generate a dummy from extreme categories of age.
 cap drop agex
 gen agex:agex = .
-replace agex = 0 if age6==15
-replace agex = 1 if age6==65
+replace agex = 0 if age6 == 15
+replace agex = 1 if age6 == 65
 la de agex 0 "15-24" 1 "65+", replace
 
 * Difference between age extremes.
@@ -236,13 +236,13 @@ bys cntry: ttest hsat, by(agex)
 * -----------------------------
 
 * DV by health.
-gr dot hsat [aw=dweight], over(health) over(cntry) ///
+gr dot hsat [aw = dweight], over(health) over(cntry) ///
     yti("Satisfaction in health services") ///
     name(dv_health, replace)
 
 * Generate a dummy from health status (bad/very bad = 0, good/very good = 1).
 cap drop health01
-recode health (1/2=1 "Good") (4/5=0 "Poor") (else=.), gen(health01)
+recode health (1/2 = 1 "Good") (4/5 = 0 "Poor") (else = .), gen(health01)
 
 * Association between DV and health status.
 bys cntry: ttest hsat, by(health01)
@@ -316,8 +316,8 @@ tw conn msat1-msat3 lrscale, by(cntry, note("")) ///
 bys cntry: reg hsat ib45.age6 female i.health lowinc ib2.pol3
 
 * Cleaner output with the -leanout- command.
-leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="FR"
-leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB"
+leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR"
+leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB"
 
 /* Notes:
 
@@ -333,11 +333,11 @@ leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB"
    population age (45-54 years-old) and is coded 'ib45' because the categories
    of 'age6' are coded 15, 25, 35 etc.
 
- - The baseline health status is set to default reference category 1=very good.
-   Categories 2-5 code for 2=good to 5=poor health.
+ - The baseline health status is set to default reference category 1 = very good.
+   Categories 2-5 code for 2 = good to 5 = poor health.
 
- - The baseline political attitude is the modal (and central) category 2=centre
-   so that 1=leftwing and 3-rightwing.
+ - The baseline political attitude is the modal (and central) category 2 = centre
+   so that 1 = leftwing and 3-rightwing.
    
    The baseline model, given by the constant, is therefore the predicted mean of
    the DV for respondents who are males, aged 45-54, in very good health, at the
@@ -346,12 +346,12 @@ leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB"
  - Let's manually check whether the model does a good job at predicting the
    constant (the baseline model) in the second country case:
    
-   su hsat if age6==45 & !female & health==1 & !lowinc & pol3==2 & cntry=="GB"
+   su hsat if age6 == 45 & !female & health == 1 & !lowinc & pol3 == 2 & cntry == "GB"
    
  - For the same country case, the model predicts a higher value for respondents
    aged 65+, keeping all other variables equal. Let's check that too:
    
-   su hsat if age6==65 & !female & health==1 & !lowinc & pol3==2 & cntry=="GB"
+   su hsat if age6 == 65 & !female & health == 1 & !lowinc & pol3 == 2 & cntry == "GB"
    
    Not so bad for a model predicting only 7% of the variance, but remember that
    the predicted values are only means, that they are significant only for some
@@ -434,7 +434,7 @@ esttab est2 est4 est6, lab nogaps beta(2) se(2) r2 ///
 * (1) France: Residuals
 * ---------------------
 
-reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="FR"
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR"
 
 * Variance inflation.
 vif
@@ -490,7 +490,7 @@ marginsplot, recast(line) recastci(rarea) ciopts(fi(25)) legend(row(1)) ///
 * (3) Britain: Exercise
 * ---------------------
 
-reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB"
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB"
 
 * As an exercise, run your own selection of regression diagnostics and marginal
 * effects for the British model. Compare the predictors in each country and see,
@@ -514,8 +514,8 @@ reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB"
 * (1) Bootstrapping
 * -----------------
 
-reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="FR", vce(bootstrap, r(100))
-reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB", vce(bootstrap, r(100))
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR", vce(bootstrap, r(100))
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB", vce(bootstrap, r(100))
 
 /* What happened here:
 
@@ -523,7 +523,7 @@ reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB", vce(bootstrap
    as you ask it (here we ran 1,000 replications) and then computes the standard
    error from the standard deviation of these simulations.
 
- - 'Resampling' means that the data used in each simulation is randomly selected
+ - Resampling means that the data used in each simulation is randomly selected
    from the original dataset, with replacement: one value may appear many times.
    The result is 1,000 simulations of the data with slightly different values.
  
@@ -539,8 +539,8 @@ reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB", vce(bootstrap
 eststo dir
 
 * Store robust models.
-eststo FRr: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="FR", vce(cluster regionfr)
-eststo GBr: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry=="GB", vce(cluster regiongb)
+eststo FRr: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR", vce(cluster regionfr)
+eststo GBr: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB", vce(cluster regiongb)
 
 * Compare both versions for a more realistic assessment of the standard errors.
 esttab est1 FRr est2 GBr, nogaps b(2) se(2) sca(rmse) compress ///
@@ -608,16 +608,16 @@ tab cntry hsys
 
 * Country-level predictor (2): health expenditure per capita.
 gen ccodewb = ""
-replace ccodewb = "BEL" if cntry=="BE"
-replace ccodewb = "DEU" if cntry=="DE"
-replace ccodewb = "DNK" if cntry=="DK"
-replace ccodewb = "EST" if cntry=="ES"
-replace ccodewb = "FIN" if cntry=="FI"
-replace ccodewb = "FRA" if cntry=="FR"
-replace ccodewb = "GBR" if cntry=="GB"
-replace ccodewb = "IRL" if cntry=="IE"
-replace ccodewb = "NLD" if cntry=="NL"
-replace ccodewb = "SWE" if cntry=="SE"
+replace ccodewb = "BEL" if cntry == "BE"
+replace ccodewb = "DEU" if cntry == "DE"
+replace ccodewb = "DNK" if cntry == "DK"
+replace ccodewb = "EST" if cntry == "ES"
+replace ccodewb = "FIN" if cntry == "FI"
+replace ccodewb = "FRA" if cntry == "FR"
+replace ccodewb = "GBR" if cntry == "GB"
+replace ccodewb = "IRL" if cntry == "IE"
+replace ccodewb = "NLD" if cntry == "NL"
+replace ccodewb = "SWE" if cntry == "SE"
 merge m:1 ccodewb using data/qog2011, keep(3) keepusing(wdi_hec)
 
 * Null model.
