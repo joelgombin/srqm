@@ -94,7 +94,7 @@ fre agea gndr health hincfel lrscale, r(10)
 
 * Recode sex to dummy.
 gen female:female = (gndr == 2) if !mi(gndr)
-la de female 0 "Male" 1 "Female", replace
+la def female 0 "Male" 1 "Female", replace
 la var female "Gender"
 
 * Fix age variable name.
@@ -103,7 +103,7 @@ ren agea age
 * Generate six age groups (15-24, 25-34, ..., 65+).
 gen age6:age6 = irecode(age,24,34,44,54,64,.)
 replace age6 = 10*age6 + 15
-la de age6 15 "15-24" 25 "25-34" 35 "35-44" 45 "45-54" 55 "55-64" 65 "65+", replace
+la def age6 15 "15-24" 25 "25-34" 35 "35-44" 45 "45-54" 55 "55-64" 65 "65+", replace
 la var age6 "Age groups"
 
 * Subjective low income dummy.
@@ -226,7 +226,7 @@ cap drop agex
 gen agex:agex = .
 replace agex = 0 if age6 == 15
 replace agex = 1 if age6 == 65
-la de agex 0 "15-24" 1 "65+", replace
+la def agex 0 "15-24" 1 "65+", replace
 
 * Difference between age extremes.
 bys cntry: ttest hsat, by(agex)
