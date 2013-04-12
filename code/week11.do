@@ -3,22 +3,46 @@
 
    F. Briatte and I. Petev
 
- - TOPIC:  Attitudes Towards Immigration in Europe
+ - TOPIC:  Satisfaction with Health Services in Britain and France
  
  - DATA:   European Social Survey Round 4 (2008)
+    
+   We explore patterns of satisfaction with the state of health services in
+   the UK and France, two countries with extensive public healthcare systems
+   and where health services play different roles in political competition.
 
-   Last updated 2012-12-15.
+ - (H1): We expect to observe high satisfaction on average, except among those
+   in ill health, who we expect to report lower satisfaction regardless of age,
+   sex, income or political views.
+
+ - (H2): We also expect respondents in political opposition to the government to
+   report less satisfaction with the state of health services in the country,
+   independently of all other characteristics.
+
+ - (H3): We finally expect to find lower patterns of satisfaction among those
+   who report financial difficulties, as evidence of an income effect that
+   we expect to exist in isolation of all others.
+
+   We use data from the European Social Survey (ESS) Round 4. The sample used in
+   the analysis contains N = 1,942 French and N = 2,079 UK individuals selected
+   through stratified probability sampling and interviewed face-to-face in 2008.
+
+   We run linear regressions for each country to assess whether satisfaction
+   with health services can be predicted from political views, independently
+   of age, sex, health status and financial situation.
+   
+   Last updated 2013-04-12.
 
 ----------------------------------------------------------------------------- */
 
 
-* Additional commands.
-foreach p in estout fre {
+* Install required commands.
+foreach p in estout fre spineplot {
 	cap which `p'
-	if _rc == 111 ssc install `p'
+	if _rc == 111 cap noi ssc install `p'
 }
 
-* Log.
+* Log results.
 cap log using code/week11.log, replace
 
 
@@ -29,291 +53,545 @@ cap log using code/week11.log, replace
 
 use data/ess2008, clear
 
-* Subsetting to respondents age 25+ with full data.
-drop if agea < 25 | mi(imdfetn, agea, gndr, brncntr, edulvla, hinctnta, lrscale)
-
 * Survey weights (design weight by country, multiplied by population weight).
-gen dpw = dweight*pweight
+gen dpw = dweight * pweight
 la var dpw "Survey weight (population*design)"
 
 * Country dummies (used for clustered standard errors).
 encode cntry, gen(cid)
 
 
-* DV: Allow many/few immigrants of different race/ethnic group from majority
-* --------------------------------------------------------------------------
-
-fre imdfetn
-
-* Relabel for concise legends in graphs.
-la def imdfetn 1 "Many" 2 "Some" 3 "Few" 4 "None", replace
-
-* Normality: distribution shows symmetricality but the reduced number of items
-* on a 4-point scale limits variability and will create postestimation issues.
-hist imdfetn, discrete percent addl ///
-	name(dv, replace)
-
-* Dummy: 1 = allow many/some immigrants.
-gen diff = (imdfetn < 3)
-la var diff "Allow many/some migrants of different race/ethnicity from majority"
-
-
-* IVs: age, gender, country of birth, education, income, left-right scale
-* -----------------------------------------------------------------------
-
-d agea gndr brncntr edulvla hinctnta lrscale
-
-* Renaming.
-ren (agea hinctnta lrscale) (age income rightwing)
-
-* Dummify sex.
-gen female:sex = (gndr == 2)
-la def sex 0 "Male" 1 "Female", replace
-
-* Dummify country of birth.
-gen born:born = (brncntr == 1)
-la def born 0 "Foreign-born" 1 "Born in country", replace
-
-* Collapse some educational categories.
-recode edulvla (1 2 = 1 "Low") (3 = 2 "Medium") (4 5 = 3 "High") (else = .), gen(edu3)
-la var edu3 "Education level"
-
-
-* Summary statistics
+* Dependent variable
 * ------------------
 
-* Export.
+d stf*
+
+* Rename DV and a bunch of covariates
+ren (stfhlth stfedu stfgov) (hsat esat gsat)
+
+* Country-specific distributions.
+tab cntry, su(hsat)
+hist hsat, discrete by(cntry, note("")) ///
+	name(dv_bins, replace)
+
+* Detailed summary statistics.
+su hsat, d
+
+
+* Cross-country comparisons
+* -------------------------
+
+* Cross-country visualization (mean).
+gr dot hsat, over(cntry, sort(1)des) yla(0 "Min" 10 "Max") ///
+    yti("Satisfaction in health services") ///
+    name(dv_dots, replace)
+
+* Cross-country visualization (median).
+gr box hsat, noout over(cntry, sort(1)des) yla(0 "Min" 10 "Max") ///
+    yti("Satisfaction in health services") ///
+    name(dv_boxes, replace)
+
+* Generate dummies for the full 11-pt scale DV.
+cap drop hsat11_*
+tab hsat, gen(hsat11_)
+
+* Cross-country visualization (proportions).
+gr hbar hsat11_*, over(cntry, sort(1)des) stack legend(off) ///
+    yti("Satisfaction in health services") ///
+    scheme(burd11) name(dv_bars, replace)
+
+
+* Independent variables
+* ---------------------
+
+fre agea gndr health hincfel lrscale, r(10)
+
+* Recode sex to dummy.
+gen female:female = (gndr == 2) if !mi(gndr)
+la def female 0 "Male" 1 "Female", replace
+la var female "Gender"
+
+* Fix age variable name.
+ren agea age
+
+* Generate six age groups (15-24, 25-34, ..., 65+).
+gen age6:age6 = irecode(age, 24, 34, 44, 54, 64, .)
+replace age6 = 10 * age6 + 15
+la def age6 15 "15-24" 25 "25-34" 35 "35-44" ///
+	45 "45-54" 55 "55-64" 65 "65+", replace
+la var age6 "Age groups"
+
+* Subjective low income dummy.
+gen lowinc = (hincfel > 2) if !mi(hincfel)
+la var lowinc "Subjective low income"
+
+* Recode left-right scale.
+recode lrscale (0/4 = 1 "Left") (5 = 2 "Centre") (6/10 = 3 "Right"), gen(pol3)
+la var pol3 "Political views (left-right)"
+
+
+* Subsetting
+* ----------
+
+* Check missing values.
+misstable pat hsat age6 female health pol3 lowinc if cntry == "FR"
+misstable pat hsat age6 female health pol3 lowinc if cntry == "GB"
+
+* Select case studies.
+keep if inlist(cntry, "FR", "GB")
+
+* Delete incomplete observations.
+drop if mi(hsat, age6, female, health, pol3, lowinc)
+
+* Final sample sizes.
+bys cntry: count
+
+
+* Normality
+* ---------
+
+* Distribution of the DV in the case studies.
+hist hsat, discrete normal xla(0 10) by(cntry, legend(off) note("")) ///
+    name(dv_histograms, replace)
+
+* Generate strictly positive DV recode.
+gen hsat1 = hsat + 1
+
+* Visual check of common transformations.
+gladder hsat1, bin(11) ///
+   name(gladder, replace)
+
+/* Notes:
+
+ - There are more missing observations for Britain than for France, and this
+   might distort the results if the non-respondents come, for example, from the
+   same end of the political spectrum. We'll be careful.
+
+ - The distribution of the DV is skewed to the right in both case studies, which
+   is consistent with the hypothesis that extensive healthcare states like the
+   ones found in Britain France enjoy higher popular support.
+
+ - To allow for a log-transformation, the variable should be strictly positive
+   since the function f: y = log(x) is undefined for x = 0. We use a recode of
+   the DV of strictly positive range to test for transformations.
+
+ - The square root comes only marginally closer to a normal distribution. With
+   little improvement in normality, transforming the DV would be overkill. It is
+   reasonable to carry on with the untransformed DV. */
+
+
+* Export summary statistics
+* -------------------------
+
+* The next command is part of the SRQM folder. If Stata returns an error when
+* you run it, set the folder as your working directory and type -run profile-
+* to run the course setup, then try the command again. If you still experience
+* problems with the -stab- command, please send a detailed email on the issue.
+
 stab using week11, replace ///
-	su(age rightwing) ///
-	fre(imdfetn female born edu3 income)
+    su(hsat) ///
+    fr(female age6 health lowinc pol3) ///
+    by(cntry)
+
+/* Basic syntax of -stab- command:
+
+ - using NAME - adds the NAME prefix to the exported file(s)
+ - su()       - summarizes a list of continuous variables (mean, sd, min-max)
+ - fre()      - summarizes a list of categorical variables (frequencies)
+
+ - by()       - produces several tables over a given categorical variable
+ - replace    - overwrite any previously existing tables
+ - [aw, fw]   - use survey weights (use only if you know how they work)
+
+  In the example above, the -stab- command will export two files to the working
+  directory, containing summary statistics for France (week11_stats_FR.txt) and
+  Britain (week11_stats_GB.txt). */
 
 
-* Associations
-* ------------
+* =====================
+* = ASSOCIATION TESTS =
+* =====================
 
-* Dummify the DV.
-tab imdfetn, gen(immig_)
 
-* Create age groups.
-gen cohort = irecode(age,24,34,44,54,64,74)
-replace cohort = 15 + 10*cohort
+* Relationships with socio-demographics
+* -------------------------------------
 
-* Crossvisualize DV with basic demographics.
-gr bar immig_*, stack percent over(cohort) by(female born, note("")) yti("") ///
-	legend(order(1 "Many" 2 "Some" 3 "Few" 4 "None") row(1)) ///
-	scheme(burd4) name(demog, replace)
+* Line graph using DV means computed for each age and gender group.
+cap drop msat_?
+bys cntry age6: egen msat_1 = mean(hsat) if female
+bys cntry age6: egen msat_2 = mean(hsat) if !female
+tw conn msat_? age6, by(cntry, note("")) ///
+    xti("Age") yti("Mean level of satisfaction") ///
+    legend(row(1) order(1 "Female" 2 "Male")) ///
+    name(hsat_age_sex, replace)
 
-* Crosstabulation: DV by gender.
-tab female imdfetn, row nof chi2 // Chi-squared test and Cramer's V
-tabchi female imdfetn, p noo noe // Pearson residuals
+* Association between DV and gender.
+by cntry: ttest hsat, by(female)
 
-* Crosstabulation: DV by country of birth.
-tab born imdfetn, row nof chi2
-tabchi born imdfetn, p noo noe
+* Correlation between DV and age (both being pseudo-continuous measurements).
+by cntry: pwcorr hsat age, obs star(.01)
 
-* Crosstabulation: DV by age cohort.
-tab cohort imdfetn, row nof chi2
-tabchi cohort imdfetn, p noo noe
+* Generate a dummy from extreme categories of age.
+cap drop agex
+gen agex:agex = .
+replace agex = 0 if age6 == 15
+replace agex = 1 if age6 == 65
+la def agex 0 "15-24" 1 "65+", replace
 
-* Dummify educational attainment.
-tab edu3, gen(edu_)
+* Difference between age extremes.
+bys cntry: ttest hsat, by(agex)
 
-* Clarify x-axis by dropping labels on income deciles.
-la def inc10 1 "D1" 10 "D10", replace
-la val income inc10
 
-* Visualization of education with income, sex and country of birth.
-gr bar edu_*, stack percent over(income) by(female born, note("") ///
-	legend(order(1 "Low" 2 "Medium" 3 "High") row(1) pos(11)) ///
-	ti("Educational attainment by income decile")) yti("") ///
-	scheme(burd3) name(edu_inc, replace)
+* Relationship to health status
+* -----------------------------
 
-* Crosstabulation.
-bys female born: tab income edu3, row nof chi2 // computed for each subgroup
-tabchi income edu3, p noo noe
+* DV by health.
+gr dot hsat [aw = dweight], over(health) over(cntry) ///
+    yti("Satisfaction in health services") ///
+    name(dv_health, replace)
 
-* Simplified political scale.
-recode rightwing ///
-	(0/4 = 1 "Left-wing") ///
-	(5 = 2 "Centre") ///
-	(6/11 = 3 "Right-wing") ///
-	, gen(wing)
-tab wing, gen(wing_)
+* Generate a dummy from health status (bad/very bad = 0, good/very good = 1).
+cap drop health01
+recode health (1/2 = 1 "Good") (4/5 = 0 "Poor") (else = .), gen(health01)
 
-* Visualization of left-right political leaning by income decile and age cohort.
-gr bar wing_*, stack percent over(income) by(cohort, note("")) yti("") ///
-	legend(order(1 "Left-wing" 2 "Centre" 3 "Right-wing") row(1)) ///
-    scheme(burd3) name(pol_inc, replace)
+* Association between DV and health status.
+bys cntry: ttest hsat, by(health01)
 
-* Crosstabulation.
-tab income wing, row nof chi2
-tabchi income wing, p noo noe
 
+* Relationship to low income status
+* ---------------------------------
+
+* DV by income.
+bys cntry: ttest hsat, by(lowinc)
+
+* Association between IV and political attitude.
+bys cntry: tab lowinc pol3, col chi2 nokey
+
+* Proportions test (since the lowinc dummy is a proportion of the sample).
+bys cntry: prtest lowinc if pol3 != 2, by(pol3)
+
+
+* Relationship to left-right attitude
+* -----------------------------------
+
+* Correlation between DV and political attitude (left 1-10 right).
+by cntry: pwcorr hsat lrscale, obs sig
+
+* Association between DV and political attitude (left, centre, right).
+gr box hsat, noout note("") over(pol3) asyvars over(cntry) legend(row(1)) ///
+    scheme(burd4) name(dv_pol3, replace)
+
+
+* Comparison with covariates
+* --------------------------
+
+d hsat esat gsat
+
+* DV and other ESS satisfaction items (edu = education, gov = government).
+cap drop msat*
+bys cntry lrscale: egen msat1 = mean(hsat)
+bys cntry lrscale: egen msat2 = mean(esat)
+bys cntry lrscale: egen msat3 = mean(gsat)
+
+* Line graph, using the means computed above for each left-right group.
+tw conn msat1-msat3 lrscale, by(cntry, note("")) ///
+    xla(0 "Left" 10 "Right") xti("") yti("Mean level of satisfaction") ///
+    legend(row(1) order(1 "Health services" 2 "Education" 3 "Government")) ///
+    name(stf_lrscale, replace)
+
+/* Notes:
+
+ - The significance tests are expectedly highly positive due to the large N.
+   The risk here is to make Type I errors, even though the variations between
+   age groups in each country seem statistically robust.
+
+ - Health status seems important in France but not in Britain, whereas old age
+   seems important in Britain but not in France. It will be interesting to see
+   if any of these effects persist after controlling for income.
+
+ - The relationship between financial difficulties and political leaning shows
+   how your independent variables are interacting with each other.
+         
+ - Other measures of satisfaction (which are not part of the model itself) show
+   how health services correlate to other measures of public sector performance
+   when the measures are examined by left-right positioning. Politics matter. */
+ 
 
 * =====================
 * = REGRESSION MODELS =
 * =====================
 
 
-* Linear regression
-* -----------------
+* Multiple linear regression model for each country case.
+bys cntry: reg hsat ib45.age6 female i.health lowinc ib2.pol3
 
-global bl "age i.female i.born i.edu3 income rightwing" // store IV names
+* Cleaner output with the -leanout- command.
+leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR"
+leanout: reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB"
 
-* Baseline OLS model.
-reg imdfetn $bl [pw = dpw]
+/* Notes:
 
-* Adjusted OLS model: observations clustered by country.
-reg imdfetn $bl [pw = dpw], vce(cluster cid)
+ - This model is specified as a multiple linear regression. It captures linear
+   relationships by computing the partial derivative of each variable, which is
+   its effect on the DV when all other variables are held constant.
 
-* The last option reads as 'variance-covariance estimation is clustered by cid'.
-* This specification enforces robust standard errors into the model. It uses the
-* respondents' country of residence as a panel variable in the estimation of all
-* regression coefficients. Panel variables are variables at which level we might
-* observe some form of within-sample clustering, which violates the assumption
-* that the error term is independently distributed across the observations.
+   We will therefore read the coefficient of an IV as its net effect on the DV,
+   independently of all other variables in the model. This interpretation gives
+   its meaning to the idiom of 'all other things being equal' (ceteris paribus).
+
+ - The baseline age category is set to the category that contains the average
+   population age (45-54 years-old) and is coded 'ib45' because the categories
+   of 'age6' are coded 15, 25, 35 etc.
+
+ - The baseline health status is set to default reference category 1 = very good.
+   Categories 2-5 code for 2 = good to 5 = poor health.
+
+ - The baseline political attitude is the modal (and central) category 2 = centre
+   so that 1 = leftwing and 3-rightwing.
+   
+   The baseline model, given by the constant, is therefore the predicted mean of
+   the DV for respondents who are males, aged 45-54, in very good health, at the
+   centre politically and who did not report financial difficulties ('lowinc').
+   
+ - Let's manually check whether the model does a good job at predicting the
+   constant (the baseline model) in the second country case:
+   
+   su hsat if age6 == 45 & !female & health == 1 & !lowinc & pol3 == 2 & cntry == "GB"
+   
+ - For the same country case, the model predicts a higher value for respondents
+   aged 65+, keeping all other variables equal. Let's check that too:
+   
+   su hsat if age6 == 65 & !female & health == 1 & !lowinc & pol3 == 2 & cntry == "GB"
+   
+   Not so bad for a model predicting only 7% of the variance, but remember that
+   the predicted values are only means, that they are significant only for some
+   coefficients, and that they apply only to a fraction of all observations.
+   
+ - To assess the overall quality of the models, you should rather read the RMSE.
+   The Root-Mean-Square Error is the standard error of the regression: it shows
+   by how much we mispredict the DV on average.
+
+   We later turn to regression diagnostics to explore the error term. */
+
+
+* Using the -estout- command
+* --------------------------
+
+* Store model estimates.
+eststo clear
+bys cntry: eststo: qui reg hsat ib45.age6 female i.health lowinc ib2.pol3
+
+* View stored model estimates.
+eststo dir
+
+* View standardized coefficients.
+esttab, wide nogaps beta(2) se(2) sca(rmse) mti("FR" "GB")
+
+* Export unstandardized coefficients.
+esttab using week12_regressions.txt, replace ///
+    nolines wide nogaps b(1) se(1) sca(rmse) mti("FR" "GB")
+
+
+* Models with covariates
+* ----------------------
+
+* Store model estimates (again).
+eststo clear
+bys cntry: eststo: reg hsat ib45.age6 female i.health lowinc ib2.pol3
+
+* Run identical model on satisfaction with education.
+bys cntry: eststo: reg esat ib45.age6 female i.health lowinc ib2.pol3
+
+* Run identical model on satisfaction with government.
+bys cntry: eststo: reg gsat ib45.age6 female i.health lowinc ib2.pol3
+
+* View updated list of model estimates.
+eststo dir
+
+* Compare DV and covariates in each country, using standardized coefficients,
+* RMSE and R-squared to compare predicted variance across the models.
+esttab est1 est3 est5, lab nogaps beta(2) se(2) sca(rmse) r2 ///
+	mti("Health" "Education" "Government") ti("France")
+
+esttab est2 est4 est6, lab nogaps beta(2) se(2) sca(rmse) r2 ///
+	mti("Health" "Education" "Government") ti("UK")
+
+/* Basic usage of -estout- commands:
+  
+ - The -estout- commands work by storing model estimates with -eststo- and then
+   putting them into tables with -esttab-. Use these commands at the end of your
+   models: start with -reg- and -leanout-, then use -eststo- and -esttab-.
+   
+ - The -estout- command is especially practical when you run many models, as
+   shown here when we compare the model between country cases and then check
+   how the DV model compares to other satisfaction measures (covariates).
+
+ - Check the -estout- online documentation for more examples. */
+
+
+* ==========================
+* = REGRESSION DIAGNOSTICS =
+* ==========================
+
+
+* Note: what we call 'diagnostics' at that stage actually covers a broader range
+* of postestimation commands like -margins- and -marginsplot- (marginal effects)
+* or seemingly unrelated regression (SUREG). The overall logic of these commands
+* is to help with the detection of patterns that are not taken into account by
+* our 'front-end' linear regression model.
+
+
+* (1) France: Residuals
+* ---------------------
+
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR"
 
 * Variance inflation.
 vif
 
-* Inspect residuals.
-predict r, resid
+* Residuals-versus-fitted values plot.
+rvfplot, yline(0) ///
+	name(rvf_fr, replace)
 
-* Diagnostic plots.
-hist r, normal name(r, replace) // distribution of residuals
-rvfplot, yli(0) name(rvf, replace)     // residuals versus fitted values
+* Store the standardized residuals for the estimation sample (France only).
+cap drop rst_fr
+predict rst_fr if e(sample), rsta
 
-* Export.
-eststo clear
-eststo lin_1: reg imdfetn $bl [pw = dpw]
-eststo lin_2: reg imdfetn $bl [pw = dpw], vce(cluster cid)
-esttab lin_? using week11_ols.txt, mti("OLS" "Adj. OLS") replace
+* Distribution of the residuals.
+hist rst_fr, normal ///
+	name(rst_fr_1, replace)
 
-* The diagnostics clearly identify the issue here: the limited number of levels
-* in the DV is causing residuals to follow a low-dimensional pattern that does
-* not approximate a normal distribution. The residuals, for instance, follow a
-* quadrimodal distribution that reflect the number of levels in the DV. The data
-* therefore fail to fit the assumptions of the model by design.
+* Store the predicted values for the estimation sample (France only).
+cap drop yhat_fr
+predict yhat_fr if e(sample)
 
-* We turn to a logistic regression (logit) model, which accepts only dichotomous
-* outcomes. The binary/dummy recoding of the DV was computed earlier as follows:
-tab diff imdfetn
+* Plot the distribution of the standardized residuals over socio-demographics.
+hist rst_fr, normal by(female age6, legend(off)) bin(10) xline(0) ///
+	name(rst_fr_2, replace)
 
-* You are very welcome to consult the UCLA Stata FAQ pages to learn how logistic
-* regression works if you are interested in estimating a logit model. Otherwise,
-* just follow the code and comments below to get some basic ideas. The following
-* is a very short demo: it would take a full course to explain logistic models
-* properly, and you are very welcome to ask for one :)
+* Plot the residuals-versus-fitted values by income and political views.
+sc rst_fr yhat_fr, by(pol3 lowinc, col(2) legend(off)) yline(0) ///
+	name(rst_fr_3, replace)
 
 
-* Logistic regression
-* -------------------
+* (2) France: Marginal effects
+* ----------------------------
 
-* Binarize the DV again to have 1 = no immigrants.
-gen nomigrants = (imdfetn > 2)
+* Briefly recall the model by calling -reg- without any new specification.
+reg
 
-* Column percentages (conditional probabilities).
-tab cohort nomigrants, col nof
+* What is observable above is the (positive) linear effect of one predictor onto
+* the DV: all other things kept equal, rightwing views lead to a higher level of
+* satisfaction with health services, independently of age, gender, income and so
+* on. You can show the same thing by predicting the marginal effect of the IV on
+* the DV with the -margins- command.
+margins pol3
+marginsplot, ///
+	name(margins_pol3_fr, replace)
 
-* Log-odds of f = ln(Y = 1).
-tabodds nomigrants cohort
-
-* Odds ratios: magnitude of success-failure rate.
-tabodds nomigrants cohort, or
-
-* Logistic regression with log-odds.
-logit nomigrants i.cohort
-
-* Logistic regression with odds ratios.
-logit nomigrants i.cohort, or
-
-* Baseline model.
-logit nomigrants $bl [pw = dpw] // coefficients are log-odds
-
-* Log-odds are variations in the probability of the DV. Negative log-odds imply
-* that an increase in the IV, or the presence of it, reduces the probability of
-* the DV being equal to 1. Log-odds can be compared by magnitude, but at that
-* stage, it is usually simpler to read only the sign of the coefficient and its
-* significance level (p-value, closeness of confidence interval bounds to zero).
-
-* Odds ratios.
-logit nomigrants $bl [pw = dpw], or
-
-* Odds ratios provide an easier means of comparison between coefficients: for
-* example, in this model, completing upper secondary education increases the
-* likelihood of allowing migrants from different groups by a factor of 2.03,
-* i.e. higher-educated respondents are twice more likely than others to have
-* answered "Some" or "Many" to the original question.
-
-* Adjusted model.
-logit nomigrants $bl [pw = dpw], vce(cluster cid)
-
-* Odds ratios.
-logit nomigrants $bl [pw = dpw], vce(cluster cid) or
-
-* Export.
-eststo clear
-eststo log_1: logit nomigrants $bl [pw = dpw]
-eststo log_2: logit nomigrants $bl [pw = dpw], vce(cluster cid)
-esttab log_? using week11_logits.txt, mti("Logit" "Adj. logit") replace
+* Let's plot a more complex interaction where we observe the effect of political
+* views and health status combined. The linear effect of political views remains
+* observable at good health but becomes indistinguishable when health degrades.
+margins health#pol3
+marginsplot, recast(line) recastci(rarea) ciopts(fi(25)) legend(row(1)) ///
+	name(margins_health_pol3_fr, replace)
 
 
-* Marginal effects
-* ----------------
+* (3) Britain: Exercise
+* ---------------------
 
-* Marginal effects of political attitude: estimated probability of DV at each
-* level of the 10-point left/right scale used in the model, all other factors
-* kept constant (demographics, education and income).
-margins, at(rightwing=(0(1)10))
-marginsplot, xla(minmax) recast(line) recastci(rarea) ciopts(col(*.6)) ///
-	name(mfx_right, replace)
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB"
 
-* Marginal effects of educational attainment, by gender and country of birth.
-* The margins command will generate estimate for all possible permutations of
-* the IV list provided, and then plot them as confidence intervals.
-margins born#female, at(edu3=(1(1)3))
-marginsplot, xla(minmax) by(female born) ///
-	name(mfx_demog, replace)
-
-* Effect of increasing age on the probability of the DV being equal to 1, by sex
-* and country of birth. The overlap in confidence intervals illustrates the weak
-* value of age as a predictor for the DV: the marginal effect of age is residual
-* in the model, at least in comparison to other predictors.
-margins born#female, at(age=(25(5)85))
-marginsplot, by(female) recast(line) recastci(rarea) ciopts(col(*.6)) ///
-	name(mfx_age, replace)
-
-* Marginal effects used to be much more cumbersome in previous versions of Stata
-* and were often computed through additional commands like the -spost9- commands
-* by Scott Long and Jeremy Freese. Bill Rising of StataCorp has written a useful
-* presentation on the -margins- commands for a recent Stata Users Group Meeting:
-* http://www.stata.com/meeting/italy12/abstracts/materials/it12_rising.pdf
+* As an exercise, run your own selection of regression diagnostics and marginal
+* effects for the British model. Compare the predictors in each country and see,
+* for instance, if age and political views have the same effects in Britain.
 
 
-* Sensitivity analysis
-* --------------------
-
-* Ordered logistic regression, to test the cut point that we chose when recoding
-* the DV to a dummy. The results should show identical signs on the coefficients
-* and their order of magnitude should also stay stable. If not, then the model
-* is sensitive to the choice of cutoff point that we made earlier. Note that in
-* our example, the signs of the coefficients should actually be the same for the
-* OLS (linear regression) and ordered logit, not for the logit (the logit codes
-* the dummy in reverse order to the original variable).
-ologit imdfetn $bl [pw = dpw], vce(cluster cid)
+* ==============
+* = EXTENSIONS =
+* ==============
 
 
-* Export all models
+* Note: this section showcases some methods that are related to the content of
+* the course, but go beyond its scope. Extension (1), bootstrapping, has to do
+* with simulation; Extension (2), corrected standard errors, is explorable at
+* much greater length with panel data analysis. These topics require broader
+* theoretical support (and possibly different data) to operate, and are shown
+* here for demonstration purposes.
+
+
+* (1) Bootstrapping
 * -----------------
 
-eststo clear
-eststo lin_1: qui reg imdfetn $bl [pw = dpw], b
-eststo lin_2: qui reg imdfetn $bl [pw = dpw], vce(cluster cid)
-eststo log_1: qui logit nomigrants $bl [pw = dpw]
-eststo log_2: qui logit nomigrants $bl [pw = dpw], vce(cluster cid)
-eststo log_3: qui ologit imdfetn $bl [pw = dpw], vce(cluster cid)
-esttab lin_* log_* using week11_models.txt, constant label beta(2) se(2) r2(2) ///
-	mti("OLS" "Adj. OLS" "Logit" "Adj. logit" "Ord. logit") replace
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "FR", ///
+	vce(bootstrap, r(100))
+reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB", ///
+	vce(bootstrap, r(100))
+
+/* What happened here:
+
+ - Bootstrapping is a simulation technique that resamples the data as many times
+   as you ask it (here we ran 100 replications) and then computes the standard
+   error from the standard deviation of these simulations.
+
+ - Resampling means that the data used in each simulation is randomly selected
+   from the original dataset, with replacement: one value may appear many times.
+   The result is 100 simulations of the data with slightly different values.
+ 
+ - Bootstrapping is particularly efficient at lower sample sizes, for which it
+   provides more reliable standard errors than the 'square root of N' formula.
+   It applies to parametric estimation commands like -su-, -reg-, etc. */
+
+
+* (2) Clustered standard errors
+* -----------------------------
+
+* Remember that we saved the initial models as 'est1' (FR) and 'est2' (GB).
+eststo dir
+
+* The next command stores the right-hand side of the regression equation, i.e.
+* the list of predictors (IVs), into a convenient string of text handled by
+* Stata as a local macro. This works almost like the global macro trick we saw
+* before, and becomes useful when you have long lists of predictors.
+local rhs "ib45.age6 female i.health lowinc ib2.pol3"
+
+* IMPORTANT: storing the variable names into a local macro is technically more 
+* appropriate than using a global one as we did in a earlier do-file. However, 
+* this come with additional constraints: local macros are handled with `ticks'
+* instead of the $dollar sign, and they have to be run in the same sequence as
+* the regression commands to work properly, WITHOUT stopping execution. This
+* means that your local macros will work only if you run the whole code block
+* (the line below AND the -reg- commands) or better, the whole do-file.
+
+* Store robust models.
+eststo FRr: reg hsat `rhs' if cntry == "FR", vce(cluster regionfr)
+eststo GBr: reg hsat `rhs' if cntry == "GB", vce(cluster regiongb)
+
+* Compare both versions for a more realistic assessment of the standard errors.
+esttab est1 FRr est2 GBr, nogaps b(2) se(2) sca(rmse) compress ///
+	mti("FR" "FR robust" "GB" "GB robust")
+
+/* What happened here:
+
+ - We clustered the data by geographical region in each regression, which means
+   that the standard errors of the coefficients will increase if the variance of
+   the data differs between regions, indicating some macro-level effect.
+ 
+ - In this example, we assume that poorer and/or less populated regions will not
+   benefit from the same health care facilities than others, which will create
+   differences between predicted means of the DV clustered by region.
+
+ - The results show that the clustered models lose some significant coefficients
+   in comparison to the original ones, which should invite us to correct some of
+   our initial interpretations, or consider more advanced modelling.
+   
+ - Robust (corrected) standard errors become crucial when the data form a panel,
+   as with cross-sectional time-series (CSTS) data, because the observations are
+   then country-years and variance will exist between and within them.
+   
+ - More complex methods exist to analyze panel data and are implemented in Stata
+   through the -xt- and -ts- commands. These methods require to handle different
+   data structures and model equations, and are not covered here. */
 
 
 * =======
@@ -324,5 +602,5 @@ esttab lin_* log_* using week11_models.txt, constant label beta(2) se(2) r2(2) /
 * Close log (if opened).
 cap log close
 
-* We are done. Thanks for following! And all the best for the future.
+* We are done, and we have covered tons of stuff. Thanks for following!
 * exit, clear
