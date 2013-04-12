@@ -53,9 +53,12 @@ cap log using code/week11.log, replace
 
 use data/ess2008, clear
 
-* Survey weights (design weight by country, multiplied by population weight).
+* Country-specific design weight, multiplied by country-level population weight.
 gen dpw = dweight * pweight
-la var dpw "Survey weight (population*design)"
+la var dpw "Survey weight (population * design)"
+
+* Survey weights.
+svyset [pw = dpw]
 
 * Country dummies (used for clustered standard errors).
 encode cntry, gen(cid)
@@ -228,7 +231,7 @@ tw conn msat_? age6, by(cntry, note("")) ///
 * Association between DV and gender.
 by cntry: ttest hsat, by(female)
 
-* Correlation between DV and age (both being pseudo-continuous measurements).
+* Correlation between DV and age.
 by cntry: pwcorr hsat age, obs star(.01)
 
 * Generate a dummy from extreme categories of age.
@@ -246,7 +249,7 @@ bys cntry: ttest hsat, by(agex)
 * -----------------------------
 
 * DV by health.
-gr dot hsat [aw = dweight], over(health) over(cntry) ///
+gr dot hsat, over(health) over(cntry) ///
     yti("Satisfaction in health services") ///
     name(dv_health, replace)
 
@@ -281,7 +284,6 @@ by cntry: pwcorr hsat lrscale, obs sig
 gr box hsat, noout note("") over(pol3) asyvars over(cntry) legend(row(1)) ///
     scheme(burd4) name(dv_pol3, replace)
 
-
 * Comparison with covariates
 * --------------------------
 
@@ -294,7 +296,7 @@ bys cntry lrscale: egen msat2 = mean(esat)
 bys cntry lrscale: egen msat3 = mean(gsat)
 
 * Line graph, using the means computed above for each left-right group.
-tw conn msat1-msat3 lrscale, by(cntry, note("")) ///
+tw conn msat? lrscale, by(cntry, note("")) ///
     xla(0 "Left" 10 "Right") xti("") yti("Mean level of satisfaction") ///
     legend(row(1) order(1 "Health services" 2 "Education" 3 "Government")) ///
     name(stf_lrscale, replace)
@@ -424,9 +426,7 @@ esttab est2 est4 est6, lab nogaps beta(2) se(2) sca(rmse) r2 ///
    
  - The -estout- command is especially practical when you run many models, as
    shown here when we compare the model between country cases and then check
-   how the DV model compares to other satisfaction measures (covariates).
-
- - Check the -estout- online documentation for more examples. */
+   how the DV model compares to other satisfaction measures (covariates). */
 
 
 * ==========================
@@ -513,11 +513,10 @@ reg hsat ib45.age6 female i.health lowinc ib2.pol3 if cntry == "GB"
 
 
 * Note: this section showcases some methods that are related to the content of
-* the course, but go beyond its scope. Extension (1), bootstrapping, has to do
-* with simulation; Extension (2), corrected standard errors, is explorable at
-* much greater length with panel data analysis. These topics require broader
+* the course, but go beyond its scope. Both techniques yield corrected standard
+* errors, which is crucial for panel data analysis. These methods require more
 * theoretical support (and possibly different data) to operate, and are shown
-* here for demonstration purposes.
+* here for demonstration purposes only.
 
 
 * (1) Bootstrapping
@@ -561,7 +560,7 @@ local rhs "ib45.age6 female i.health lowinc ib2.pol3"
 * instead of the $dollar sign, and they have to be run in the same sequence as
 * the regression commands to work properly, WITHOUT stopping execution. This
 * means that your local macros will work only if you run the whole code block
-* (the line below AND the -reg- commands) or better, the whole do-file.
+* (the line below AND the -reg- commands), or the whole do-file.
 
 * Store robust models.
 eststo FRr: reg hsat `rhs' if cntry == "FR", vce(cluster regionfr)
@@ -587,11 +586,7 @@ esttab est1 FRr est2 GBr, nogaps b(2) se(2) sca(rmse) compress ///
    
  - Robust (corrected) standard errors become crucial when the data form a panel,
    as with cross-sectional time-series (CSTS) data, because the observations are
-   then country-years and variance will exist between and within them.
-   
- - More complex methods exist to analyze panel data and are implemented in Stata
-   through the -xt- and -ts- commands. These methods require to handle different
-   data structures and model equations, and are not covered here. */
+   then country-years and variance will exist between and within them. */
 
 
 * =======
