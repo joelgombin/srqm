@@ -390,7 +390,7 @@ eststo dir
 esttab, wide nogaps beta(2) se(2) sca(rmse) mti("FR" "GB")
 
 * Export unstandardized coefficients.
-esttab using week12_regressions.txt, replace ///
+esttab using week11_regressions.txt, replace ///
     nolines wide nogaps b(1) se(1) sca(rmse) mti("FR" "GB")
 
 
@@ -457,7 +457,7 @@ rvfplot, yline(0) ///
 cap drop rst_fr
 predict rst_fr if e(sample), rsta
 
-* Distribution of the residuals.
+* Distribution of the standardized residuals.
 hist rst_fr, normal ///
 	name(rst_fr_1, replace)
 
