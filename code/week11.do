@@ -6,7 +6,7 @@
  - TOPIC:  Satisfaction with Health Services in Britain and France
  
  - DATA:   European Social Survey Round 4 (2008)
-    
+
    We explore patterns of satisfaction with the state of health services in
    the UK and France, two countries with extensive public healthcare systems
    and where health services play different roles in political competition.
@@ -31,7 +31,7 @@
    with health services can be predicted from political views, independently
    of age, sex, health status and financial situation.
    
-   Last updated 2013-04-12.
+   Last updated 2013-05-31.
 
 ----------------------------------------------------------------------------- */
 
@@ -252,6 +252,16 @@ bys cntry: ttest hsat, by(agex)
 gr dot hsat, over(health) over(cntry) ///
     yti("Satisfaction in health services") ///
     name(dv_health, replace)
+
+* Line graph using DV means computed for each health status and gender group.
+cap drop mu_hsat_*
+bys health female: egen mu_hsat_FR = mean(hsat) if cntry == "FR"
+bys health female: egen mu_hsat_GB = mean(hsat) if cntry == "GB"
+tw conn mu_hsat_* health, by(female, note("")) ///
+    xti("Health status") yti("Mean level of satisfaction") ///
+    xlab(1 "Good" 5 "Bad") ///
+    legend(row(1) order(1 "FR" 2 "GB")) ///
+    name(hsat_health, replace)
 
 * Generate a dummy from health status (bad/very bad = 0, good/very good = 1).
 cap drop health01

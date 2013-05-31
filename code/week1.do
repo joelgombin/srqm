@@ -21,7 +21,7 @@
    research project. Practice with Stata by trying out commands as you learn
    them. If things do not work out, try again after checking the command syntax.
 
-   Last updated 2013-02-08.
+   Last updated 2013-05-29.
 
 ----------------------------------------------------------------------------- */
 
@@ -461,7 +461,7 @@ ls "data/*.dta", w
 * one of the course datasets.
 
 
-* (2) European Social Survey Round 4, 2008
+* (2) European Social Survey Round 5, 2008
 * ----------------------------------------
 
 * Load.
@@ -471,11 +471,11 @@ use data/ess2008, clear
 lookfor health immig
 
 
-* (3) Quality of Government, 2011
+* (3) Quality of Government, 2013
 * -------------------------------
 
 * Load.
-use data/qog2011, clear
+use data/qog2013, clear
 
 * Example search.
 lookfor devel orig
@@ -491,11 +491,11 @@ use data/wvs2000, clear
 lookfor army homo
 
 
-* (5) General Social Survey, 2010
+* (5) General Social Survey, 2012
 * -------------------------------
 
 * Load.
-use data/gss2010, clear
+use data/gss0012, clear
 
 * Example search.
 lookfor army homo
