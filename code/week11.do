@@ -39,6 +39,7 @@
 * Install required commands.
 foreach p in estout fre spineplot {
 	cap which `p'
+	if "`p'" == "scheme-burd" cap which scheme-burd.scheme // name fix
 	if _rc == 111 cap noi ssc install `p'
 }
 
