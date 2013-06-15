@@ -192,20 +192,20 @@ gladder hsat1, bin(11) ///
 * to run the course setup, then try the command again. If you still experience
 * problems with the -stab- command, please send a detailed email on the issue.
 
-stab using week11, replace ///
-    su(hsat) ///
-    fr(female age6 health lowinc pol3) ///
-    by(cntry)
+stab using week11_stats_FR.txt if cntry == "FR", replace ///
+  mean(hsat) ///
+  prop(female age6 health lowinc pol3)
 
-/* Basic syntax of -stab- command:
+stab using week11_stats_GB.txt if cntry == "GB", replace ///
+  mean(hsat) ///
+  prop(female age6 health lowinc pol3)
 
- - using NAME - adds the NAME prefix to the exported file(s)
- - su()       - summarizes a list of continuous variables (mean, sd, min-max)
- - fre()      - summarizes a list of categorical variables (frequencies)
+/* Syntax of the -stab- command:
 
- - by()       - produces several tables over a given categorical variable
- - replace    - overwrite any previously existing tables
- - [aw, fw]   - use survey weights (use only if you know how they work)
+ - using FILE  - name of the exported file; plain text (.txt) recommended
+ - replace     - overwrite any previously existing file
+ - mean()      - summarizes a list of continuous variables (mean, sd, min, max)
+ - prop()      - summarizes a list of categorical variables (frequencies)
 
   In the example above, the -stab- command will export two files to the working
   directory, containing summary statistics for France (week11_stats_FR.txt) and
