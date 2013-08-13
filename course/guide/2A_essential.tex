@@ -303,7 +303,7 @@ But then, you probably want to learn only about the three practical categories t
 		fre female
 	\end{docspec}
 
-	This example, inspired by \footcite[41]{LongFreese:2001a}, anticipates what we learn to do in the next sections with conditional statements, missing values and value labels. It takes the value 0 for males and 1 for females for nonmissing values of the \texttt{sex} variable, and then defines each value of the dummy through the \texttt{female} value label that has been assigned to the \texttt{female} dummy by the previous \cmd{gen} command:\\[1em]
+	This example, inspired by \footcite[41]{LongFreese:2001a}, anticipates what we learn to do in the next sections with conditional statements, missing values and value labels. It takes the value 0 for males and 1 for females for nonmissing values of the \texttt{sex} variable, and then defines each value of the dummy through the \texttt{female} value label that has been assigned to the \texttt{female} dummy by the previous \cmd{gen}{generate} command:\\[1em]
 	
 	\includegraphics{gss-female-dummy}
 	
@@ -373,7 +373,7 @@ Before you even start worrying about recoding continuous to categorical variable
 		fre v225, r(7)
 	\end{docspec}
 	
-	We use the \cmd{fre} command to diagnose the issue, passing the \coab{rows}{r}{fre} option in order to show only a few values instead of the full range from 15 to 99. Strangely enough, values 98 and 99 indicate missing data here:\\[1em]
+	We use the \cmd{fre} command to diagnose the issue, passing the \coab{r}{rows}{fre} option in order to show only a few values instead of the full range from 15 to 99. Strangely enough, values 98 and 99 indicate missing data here:\\[1em]
 
 		\includegraphics{wvs-fre-age}\\[1em]
 	
