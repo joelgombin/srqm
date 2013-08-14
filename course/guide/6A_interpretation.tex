@@ -1,7 +1,15 @@
 %
 %
 %
-\section{Interpretation}
+\section{Interpretation}%
+  %
+  %
+  \label{sec:linreg}
+  %
+  %
+  \index{Linear regression!Interpretation}%
+  %
+  %
 
 We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard Stata output for the \cmd{reg} command, which estimates the simple linear regression model \texttt{reg bread vote}. You should read your model by looking briefly at the \emph{goodness of fit} of the model, and then focus on understanding the \emph{regression coefficients}.
 
@@ -22,17 +30,18 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	%
 	% 6.1.1
 	%
-	\subsection{Goodness of fit}
-
-	\label{sec:goodness}%
+	\subsection{Goodness of fit}%
+    \index{Linear regression!Goodness of fit}%
+    \label{sec:goodness}%
 	%
 	Table~\ref{tbl:regression_fit} shows the variance table (left), which details the sum of squares for the model and for its residuals. This information is redundant with an analysis of variance, and is used to derive information on the goodness of fit (right):
 
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1_regress_top.pdf}
 
-	  	\caption[Extract from \cmd{reg} output (1): Variance and goodness of fit]{\label{tbl:regression_fit}
-		Extract from \cmd{reg} output (1): Variance and goodness of fit.\\
+	  	\caption[Extract from \cmd{reg} output (1): Variance and goodness of fit]{\label{tbl:regression_fit}%
+		Extract from \cmd{reg} output (1): %
+    Variance and goodness of fit. %
 		\hibbs}
 	\end{table}%
 
@@ -56,21 +65,25 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	%
   % unstd, std, dummies
   %
-	\subsection{Regression coefficients}
+	\subsection{Regression coefficients}%
+    \index{Linear regression!Regression coefficients}%
+    \index{Regression models!Coefficients!Linear regression}%
+
 	\paragraph{Interpreting coefficients}%
-	\label{sec:coefficients}%
+  	\label{sec:coefficients}%
 	%
 	Table~\ref{tbl:regression_coef} shows the regression coefficients and related information, which is the heart of the model. Whether your model is statistically significant or whether it captures a large fraction of variance is of limited importance in comparison to the coefficient estimates of the regressors. A statistically insignificant model, for instance, will fail to estimate a single reliable predictor. In practical terms, this implies you need not spend more than a minute on the goodness of fit of your model, and should instead pay \emph{more than careful} attention to its coefficients:
 
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1_regress_bottom.pdf}
 
-	  	\caption[Extract from \cmd{reg} output (2): Regression coefficients]{\label{tbl:regression_coef}
-		Extract from \cmd{reg} output (2): Regression coefficients.\\
-		\hibbs}
+	  	\caption[Extract from \cmd{reg} output (2): Regression coefficients]{\label{tbl:regression_coef}%
+        Extract from \cmd{reg} output (2): %
+        Regression coefficients. %
+		    \hibbs}
 	\end{table}%
 
-	The coefficients, or regression \emph{parameters}, were estimated through \emph{maximum likelihood}\index{Models!Maximum Likelihood Estimation (MLE)}, a method of estimation that can be used with several regression models.\footnote{Maximum likelihood estimation (MLE) is also used for logistic regression, which is briefly described and illustrated at p.~\pageref{sec:logit}.} What they intend to measure, beyond the statistical significance of the independent variable $X$ for predicting the dependent variable $Y$, is its \emph{marginal effect}\index{Linear regression!Marginal effects}\index{Marginal effects|seealso{Linear regression}}: as in the linear function $Y=\beta X$, when $X$ increases by one unit, $Y$ increases by $\beta$ units, where $\beta$ is the regression coefficient of $X$. If the coefficient is negative, then $Y$ decreases by $\beta$ units when $X$ increases by one unit.
+	The coefficients, or regression \emph{parameters}, were estimated through \emph{maximum likelihood}\index{Models!Maximum Likelihood Estimation (MLE)}, a method of estimation that can be used with several regression models.\footnote{Maximum likelihood estimation (MLE) is also used for logistic regression, which is briefly described and illustrated at p.~\pageref{ch:log}.} What they intend to measure, beyond the statistical significance of the independent variable $X$ for predicting the dependent variable $Y$, is its \emph{marginal effect}\index{Linear regression!Marginal effects}\index{Marginal effects|seealso{Linear regression}}: as in the linear function $Y=\beta X$, when $X$ increases by one unit, $Y$ increases by $\beta$ units, where $\beta$ is the regression coefficient of $X$. If the coefficient is negative, then $Y$ decreases by $\beta$ units when $X$ increases by one unit.
 
 	In the present example, the model `starts' at the constant, $\alpha \approx 45.18$, which is the level of presidential support $\bar Y$ predicted by the model when the \texttt{bread} parameter is null (or, in quick notation, $\alpha = E(Y|X=0)$). This constant is theoretical and not always as meaningful as it is here. This is because from that point, the model predicts that every increase in one unit of the \texttt{bread} variable (real growth in disposable income, in \%) is associated to an increase in $\beta \approx 3.32$. Linear regression is an additive model, and the regression parameter is positive, which is why it makes sense to describe the model as an engine that estimates `constant' presidential support around 45\%, and then predicts a `marginal' increase of 3.3 percentage points in support for each percentage point of real disposable income growth.
 	
@@ -79,9 +92,11 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1x2.pdf}
 
-	  	\caption[Extract from \cmd{reg} output (3): Multiple regression coefficients]{\label{tbl:hibbs_yx1x2}
-		Extract from \cmd{reg} output (3): Multiple regression coefficients.\\
-		\hibbs}
+	  	\caption[Extract from \cmd{reg} output (3): %
+        Multiple regression coefficients]{\label{tbl:hibbs_yx1x2}%
+		    Extract from \cmd{reg} output (3): %
+        Multiple regression coefficients. %
+        \hibbs}
 	\end{table}%
 	
 	Any model that yields one statistically significant coefficient can be interesting to interpret, but make sure that you read regression coefficients within their confidence bounds: standard errors can be quite large in low-$N$ samples, and their confidence intervals can be consequently large too, as is the case here in the `Bread and Peace' model. Stata displays the standard errors and the ratio between the coefficient and its standard error, the $t$-value, which is used to compute the $p$-value from the $t$-distribution. If the confidence interval of your coefficient comes close to include zero, then its marginal effect might well be null or close to null.
@@ -101,18 +116,19 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	  \end{array}\right\}
 	\]
 	
-	In this equation, the \texttt{democracy} coefficient is not estimated for dictatorships, which means that the dictatorship category is the \emph{reference category}, or the \emph{baseline} of your model. The \texttt{democracy} coefficient $\beta 3$ in the regression represents the \emph{net effect} on this baseline. You can code any categorical variable as one or more dummies with either \cmd{recode} or \abbr{tab}{tabulate} with the \texttt{gen(dummy)} option, and therefore calculate the net effect of each categorical predictor.
+	In this equation, the \texttt{democracy} coefficient is not estimated for dictatorships, which means that the dictatorship category is the \emph{reference category}, or the \emph{baseline} of your model. The \texttt{democracy} coefficient $\beta 3$ in the regression represents the \emph{net effect} on this baseline. You can code any categorical variable as one or more dummies with either \cmd{recode} or \cmd{tab}{tabulate} with the \texttt{gen(dummy)} option, and therefore calculate the net effect of each categorical predictor.
 
-	Table~\ref{tbl:abortion_dummy} shows a practical example of a dummy coding for democratic regimes in a multiple linear regression at the country level. The dummy is preceded by the \abbr{i.}{interaction} prefix command. The coefficient for the \texttt{1.democracy} variable indicates how the dependent variable compares in democracies versus dictatorships when holding all other variables in the model constant. The coefficient is positive, indicating that on average, democracies enjoy higher support for abortion; the standard error on that estimate, however, is too high, and the coefficient is statistically insignificant.
+	Table~\ref{tbl:abortion_dummy} shows a practical example of a dummy coding for democratic regimes in a multiple linear regression at the country level. The dummy is preceded by the \cmd{i.}{interaction} prefix command. The coefficient for the \texttt{1.democracy} variable indicates how the dependent variable compares in democracies versus dictatorships when holding all other variables in the model constant. The coefficient is positive, indicating that on average, democracies enjoy higher support for abortion; the standard error on that estimate, however, is too high, and the coefficient is statistically insignificant.
 
 	In that same regression table, another categorical variable codes for political regime: \texttt{dpi\_system} distinguishes presidential, parliamentary and mixed regimes. In the \texttt{dpi\_system} variable, presidential regimes were coded \texttt{0} and are the reference category. The overall model therefore uses dictatorial presidential regimes to measure whether support for abortion is higher or lower in other regimes, the results of which are the dummy coefficients. In this example, the only statistically significant category codes for parliamentary regimes (\texttt{dpi\_system~==~2}).
 
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/abortion_dummy.pdf}
 
-	  	\caption[Linear regression with a dummy]{\label{tbl:abortion_dummy}
-		Linear regression with the \texttt{i.democracy} dummy, recoded from variable \texttt{gol\_polreg}.\\
-		\qog}
+	  	\caption[Linear regression with a dummy]{\label{tbl:abortion_dummy}%
+        Linear regression with the \texttt{i.democracy} dummy, %
+        recoded from variable \texttt{gol\_polreg}. %
+		    \qog}
 	\end{table}%
 	
 	Figure~\ref{fig:abortion_dummy_plot} shows how this dummy translates graphically: democracies and dictatorships have been estimated in the same way, using the same variables with the same coefficients. However, the regression line for democracies (red) is slightly above the baseline model for dictatorships (blue). The distance between the two parallel regression lines is the (positive) net effect of \texttt{i.democracy} on the dependent variable \texttt{wvs\_abort}. This effect is rather minor, since many other predictors are also correlated to democracy and absorb most of its variance.
@@ -120,12 +136,12 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	\begin{figure}[htp]
 		\includegraphics[width=.9\textwidth]{images/abortion_dummy_plot.pdf}
 
-		\caption[Plotting the effect of a dummy]{\label{fig:abortion_dummy_plot}
-		Plotting the effect of the \texttt{i.democracy} dummy with two linear fits of Table~\ref{tbl:abortion_dummy}.\\
+		\caption[Plotting the effect of a dummy]{\label{fig:abortion_dummy_plot}%
+		Plotting the effect of the \texttt{i.democracy} dummy with two linear fits of Table~\ref{tbl:abortion_dummy}. %
 		\qog}
 	\end{figure}%
 
-	Stata will accept the \abbr{i.}{interaction} prefix command in front of any categorical variable, and will select the first category as the baseline. Dummies are simple to implement but are useful \emph{only once you know the baseline of the model}. If you are coding a lot of information as dummies, then your model describes a theoretical `zero' situation where all dummies are equal to nil. Since you have to interpret dummies in reference to that situation, make sure that you understand what is the reference category of each dummy.
+	Stata will accept the \cmd{i.}{interaction} prefix command in front of any categorical variable, and will select the first category as the baseline. Dummies are simple to implement but are useful \emph{only once you know the baseline of the model}. If you are coding a lot of information as dummies, then your model describes a theoretical `zero' situation where all dummies are equal to nil. Since you have to interpret dummies in reference to that situation, make sure that you understand what is the reference category of each dummy.
 
 	% http://www.theanalysisfactor.com/confusing-statistical-term-6-factor/
   
@@ -139,9 +155,9 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1x2_beta.pdf}
 
-	  	\caption[Extract from \cmd{reg} output (5): Standardized regression coefficients]{\label{tbl:hibbs_yx1x2_beta}
-		Extract from \cmd{reg} output (5): Standardized regression coefficients.\\
-		\hibbs}
+	  	\caption[Extract from \cmd{reg} output (5): Standardized regression coefficients]{\label{tbl:hibbs_yx1x2_beta}%
+      Extract from \cmd{reg} output (5): Standardized regression coefficients. %
+      \hibbs}
 	\end{table}%
 	
 	Standardized coefficients should be read as an approximate measure of \emph{statistical} influence: the more variance a variable captures, the further away from zero its standardized coefficient will be. The positive or negative sign does not apply to the magnitude of standardized coefficients, only their `distance' to zero. This is not a measure of substantive influence or even less causal influence by any means. However, it gives you a hierarchy of importance that shows, for example, that the `Bread and Peace' model is primordially driven by the \texttt{bread} (economy) variable, whose standard coefficient is close to .8, while the peace variable carries less statistical weight with an \emph{absolute} standardized coefficient of .51.
@@ -163,9 +179,12 @@ Table~\ref{tbl:hibbs_yx1_estout}, finally, shows a few more commands to format y
 \begin{table}[htp]
 	\includegraphics[scale=.5]{images/hibbs_yx1_estout.pdf}
 
-	\caption[Storing estimates with \cmd{predict}]{\label{tbl:hibbs_yx1_estout}
-	Storing and exporting estimates with \cmd{estout}.\\
-	See \texttt{help estout} and related online documentation for options. \emph{Note:} the \cmd{reg} command is muted by the \abbr{qui}{quietly} command in this code; its output does not show up on screen, but the command ran `silently' in the background. \hibbs{12-15}}
+	\caption[Storing estimates with \cmd{predict}]{\label{tbl:hibbs_yx1_estout}%
+    Storing and exporting estimates with \cmd{estout}. %
+	  See \statacode{help estout} and related online documentation for options. %
+    \emph{Note:} the \cmd{reg} command is muted by the \cmd{qui}{quietly} command in this code; %
+    its output does not show up on screen, but the command ran `silently' in the background. %
+    \hibbs}
 \end{table}%
 
 \paragraph{Formatting instructions} See Table~\ref{tbl:estout_reg} at p.~\pageref{tbl:estout_reg} for layout instructions and code.
@@ -185,9 +204,10 @@ Finally, note that the code used with the \cmd{estout} command actually estimate
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1x2_leanout.pdf}
 
-	  	\caption[Extract from \cmd{reg} output (4): Simplified regression output]{\label{tbl:hibbs_yx1x2_leanout}
-		Extract from \cmd{reg} output (4): Simplified regression output using the \cmd{leanout} prefix.\\
-		\hibbs}
+	  	\caption[Extract from \cmd{reg} output (4): Simplified regression output]{\label{tbl:hibbs_yx1x2_leanout}%
+      Extract from \cmd{reg} output (4): %
+      Simplified regression output using the \cmd{leanout} prefix. %
+      \hibbs}
 	\end{table}%
 	
 	The drastic reduction of information obtained through \cmd{leanout} is a good exercise in itself to check whether you understand regression coefficients correctly. The parameters selected by \cmd{leanout} are expressed in real-world units, which encourages the reader to read standard errors, confidence intervals and the RMSE rather than $p$-values. This approach makes sense, especially when interpreting unstandardized coefficients for untransformed variables, because in that case, you are able to read coefficients in the same metric as the actual variables, such as years, currencies, percentage points or counts (i.e. numbers of something: alcoholic beverages per week, sexual partners in the last five years, whatever).

@@ -9,15 +9,15 @@
 	
 	Most importantly for you at that stage, replicability implies that you \hlred{\textbf{never overwrite the original dataset}: leave the data source intact}, and keep the zipped archives of original datasets as backup copies.%
 		%
-		\footnote{If you ever alter a course dataset by saving it with modifications, quit Stata and delete its \texttt{.dta} file in the \data folder. The course setup program will restore a pristine copy of the data from the \ZIP archive when you reopen Stata.}%
+		\footnote{If you ever alter a course dataset by saving it with modifications, quit Stata and delete its \ext{.dta} file in the \data folder. The course setup program will restore a pristine copy of the data from the \ZIP archive when you reopen Stata.}%
 
 	%
 	%
 	\newthought{Now load a dataset.} Stata can load example data with the \cmd{sysuse} and \cmd{webuse} commands, as we previously saw with the \code{lifeexp} dataset at p.~\pageref{lifeexp}. The course provides its own teaching datasets, which can be loaded by passing their disk files to the \cmd{use} command.%
 		%
-		\footnote{The \cmd{use} command can also copy data from a \URL. As soon as the path to your data includes spaces, you will need to enclose it in double quotes. Stata looks for \texttt{.dta} files by default, so the extension is not needed here because all course datasets are provided in Stata 9/10 format.}%
+		\footnote{The \cmd{use} command can also copy data from a \URL. As soon as the path to your data includes spaces, you will need to enclose it in double quotes. Stata looks for \ext{.dta} files by default, so the extension is not needed here because all course datasets are provided in Stata 9/10 format.}%
 
-	All datasets are in the \texttt{data} folder and require that you specify that path to the \cmd{use} command to load correctly. The example below will load a course dataset and then replace it with another one:%
+	All datasets are in the \data folder and require that you specify that path to the \cmd{use} command to load correctly. The example below will load a course dataset and then replace it with another one:%
 
 		\begin{docspec}
 			* Load the National Health Interview Survey, years 2000-2009.\\
@@ -119,7 +119,7 @@ Listing the data is done only for exploratory motives: do not send data listings
 \includegraphics{qog-li-cname-ccodealp}\\[1em]
 
 The \cmd{in} operator selects observations by their row number, which has limited use in most circumstances.%
-	\index{Selectors!Observation ranges: \docmsg{in}} %
+	\index{Selectors!Observation ranges: \cmd{in}} %
 	What you usually want to do instead is to select observations according to a given condition, which we will see how to do very soon.
 
 \newthought{Describe the variables.} The command to list all variables in a dataset is \cmd[d]{describe}, which is more or less the first command that you want to run right after opening a dataset, if only to verify that the data have loaded properly. It can be used on its own or provided with a list of selected variable names:\\[1em]
@@ -177,7 +177,7 @@ Then, you might also want to adjust \emph{variable labels}, which are the short 
 
 It is generally a good idea to have variable labels that will provide something informative to graphs where they appear as axis titles. Short titles with some indication of the underlying coding scheme usually do the trick.
 
-One last aspect of data preparation that might be of some use is to subset (i.e. to restrict) the dataset to the variables that you are going to use. To do so, pass the names of your variables to the \cmd{keep} option, as in \docmsg{keep v1 v2 v3} etc. I however strongly suspect this requirement to be some form of older computing age legacy that would now apply only in only few cases of large data and small memory, so I recommend \emph{not} doing this by default.
+One last aspect of data preparation that might be of some use is to subset (i.e. to restrict) the dataset to the variables that you are going to use. To do so, pass the names of your variables to the \cmd{keep} option, as in \statacode{keep v1 v2 v3} etc. I however strongly suspect this requirement to be some form of older computing age legacy that would now apply only in only few cases of large data and small memory, so I recommend \emph{not} doing this by default.
 
 \newthought{Essential data skills} include being able to further distinguish between types of variables (p.~\pageref{sec:variable-types}), to encode missing values so that the software recognizes them (p.~\pageref{sec:missing-values}), and to recode variables to alternative groups and categories (p.~\pageref{sec:categorical-recodes}).
 
@@ -244,7 +244,7 @@ But then, you probably want to learn only about the three practical categories t
 
 	A categorical variable might correspond to a continuous variable at lesser dimensionality: age groups, for example, are a recode of age measured in years into a handful of ordered categories (15-24, 25-34, etc.), which allow to speak in aggregates like `the youth', `the workforce' or `seniors'. In such \emph{ordinal} variables, the \emph{cutoff points} are expected to follow some kind of numeric convention: age groups might be coded per decade, income might be coded by decile or by bands of thousands of constant dollars, and so on.
 
-	The example below shows the output of the \cmd{fre} command for a categorical variable from the \ess dataset.\pkg{fre} Household net income, which was originally measured in country-specific units, was aggregated to deciles for cross-country comparability:\\[1em]
+	The example below shows the output of the \cmd{fre} command for a categorical variable from the \ess dataset.\pkgfirst{fre} Household net income, which was originally measured in country-specific units, was aggregated to deciles for cross-country comparability:\\[1em]
 
 	\begin{docspec}
 		use data/ess2008, clear\\
@@ -415,46 +415,9 @@ Before you even start worrying about recoding continuous to categorical variable
 \end{description}
 
 \paragraph{Using logical operators} %
-As previously with the female dummy recode from p.~\pageref{female-dummy} we have used a logical statement with the \cmd{if} command, to operate a command only for a selection of observations. The one above says: ``apply (the \texttt{clonevar} command) only to observations for which (marital status) is strictly inferior to 9''. A list of logical statements is shown below:
+As previously with the female dummy recode from p.~\pageref{female-dummy} we have used a logical statement with the \cmd{if} command, to operate a command only for a selection of observations. The one above says: ``apply (the \texttt{clonevar} command) only to observations for which (marital status) is strictly inferior to 9''. A list of Stata logical statements is shown below:
 
-	\begin{figure*}
-		\begin{circuitikz}
-			\draw (0,0) node[american and port, color = s1] (aand) {};
-			\draw (2.5,0) node[european and port, color = s2] (eand) {};
-
-			\draw (5,0) node[american or port, color = s1] (aor) {};
-			\draw (7.5,0) node[european or port, color = s2] (eor) {};
-
-			\draw (9,0) node[american not port, color = s1] (anot) {};
-			\draw (12,0) node[european not port, color = s2] (enot) {};
-		\end{circuitikz}
-
-		\caption{The \texttt{AND}, \texttt{OR} and \texttt{NOT} logic gates in American (red) and European (blue) representations.}
-		\label{fig:gates}
-	\end{figure*}
-
-	\begin{table}
-	\begin{center}
-	\footnotesize
-	\begin{tabular}{ll}
-	\toprule
-	Symbol & Meaning \\
-	\midrule
-	\quad \texttt{>} and\texttt{>=} & strictly superior / or equal to \\
-	\quad \texttt{<} and\texttt{<=} & strictly inferior / or equal to  \\
-	\quad \texttt{==} & equal to \\
-	\quad \texttt{!=} & \emph{not} equal to \\
-	\quad \texttt{mi(x, y, z)} & missing any of the variables\texttt{x, y, z}\\
-	\quad \texttt{!mi(x, y, z)} & \emph{not} missing any of the variables\texttt{x, y, z}\\
-	\quad \texttt{inlist(x, ...)} & values of variable \texttt{x} in the list \texttt{...}\\
-	\quad \texttt{if (...) \& (...)} & if (...) \emph{and} (...)\\
-	% \quad \texttt{if (...) | (...)}  & if (...) \emph{or} (...)
-	\bottomrule
-	\end{tabular}
-	\end{center}
-	\label{tab:logical-symbols}%
-		\index{Logical statements}\index{Selectors!Logical conditions: \docmsg{if}}
-	\end{table}
+\input{T_logicals}
 	
 \newthought{Once missing values are encoded}, you will have to subset your data, that is, to extract the set of observations for which no values are missing in the data. The \cmd{misstable pat} command provides a handy way to establish, as in the \ESS example below, the percentage of fuly measured observations:
 

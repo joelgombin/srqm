@@ -5,18 +5,9 @@
 
 \newthought{This section} covers reasonably low-tech regression modelling in Stata.%
 
-% \input{6A_interpretation}%
-% %
-% \input{6B_diagnostics}%
-% %
-% \input{6C_interactions}%
-% %
-
 % handbook
 % jackman western
 % slides s9, 10, 11
-
-
 
 \paragraph{Theoretical generalization}
 
@@ -120,7 +111,7 @@ To apply this kind of model to your data, you first need to check whether the va
 %   In brief, you should turn to the \cmd{qreg} command and related documentation on quantile regression if you are examining a dependent variable that is distributed on a continuum, but for which you can clearly differentiate \emph{two} different groups within the observations. Your data need to be properly sampled to apply for quantile regression, and your control variables need to be available for both groups under examination.
 % 
 %   \paragraph{Regression for categorical data}%
-%   \label{sec:logit}\index{Logistic regression}%
+%   \label{ch:log}\index{Logistic regression}%
 %   %
 %   Linearity and normality are irrelevant when your dependent variable is not a continuous measure of interval data. If you are analyzing categorical data, such as nominal categories or dichotomous/binary outcomes of the ``yes/no'' form, as well as independent event counts\index{Data!Count data} where each event is probabilistically equivalent to a `repeated trial' following a Poisson distribution (e.g. road traffic accidents), then the principles underlying \emph{logistic regression} will better capture the probability distribution of your data.
 % 
@@ -142,7 +133,7 @@ To apply this kind of model to your data, you first need to check whether the va
 % 
 %   The coefficients of a logistic regression are radically different to those of a linear model. The \emph{link function} that underlies the model does not take the form $Y = \alpha + \beta X$ but instead define the log-likelihood of $Y$, where the likelihood of $Y$ is the sum of its `successes' $Pr(Y=1)=p$ divided by the sum of its `failures' $Pr(Y=0)=1-p$. The ratio $p/(1-p)$ is then transformed to its natural logarithm, in order to escape the 0--1 bounds of the probability $p$ and obtain regression coefficients as \emph{log odds}, which can range from 0 to infinity, and which basically measure the magnitude of each independent variable as a probabilistic predictor of $Y$.
 %   
-%   In a logistic model, just as with linear regression, the constant is the null estimator, or $Pr(Y=1)=\alpha$ when all other variables are held constant. The constant indicates that the models `starts' with a probability of being obese of $exp(.94)/(1-exp(.94))=.71$, or 71\%.\footnote{You can ask Stata to display that result, with the \abbr{di}{display} command: \texttt{di exp(.94)/(1-exp(.94))} (turn to \texttt{help math functions} for more math equation fun).} This probability is then enhanced by positive coefficients or penalized by negative ones, proportionally to their estimated values. In this model, race increases the log odds of being obese for individuals in the categories 2 (Blacks) and 3 (Hispanics); reversely, the negative log odds of the fourth race group (Asians) indicates a reduced risk of obesity. Similarly, every year of education above Grade 12 also predicts a lesser likelihood of being obese: for each increase in \texttt{educrec1}, a measure of educational attainment, the odds of being obese drop by $exp(-.16)/(1-exp(-.16))=.46$, or 46\%.
+%   In a logistic model, just as with linear regression, the constant is the null estimator, or $Pr(Y=1)=\alpha$ when all other variables are held constant. The constant indicates that the models `starts' with a probability of being obese of $exp(.94)/(1-exp(.94))=.71$, or 71\%.\footnote{You can ask Stata to display that result, with the \cmd{di}{display} command: \texttt{di exp(.94)/(1-exp(.94))} (turn to \statacode{help math functions} for more math equation fun).} This probability is then enhanced by positive coefficients or penalized by negative ones, proportionally to their estimated values. In this model, race increases the log odds of being obese for individuals in the categories 2 (Blacks) and 3 (Hispanics); reversely, the negative log odds of the fourth race group (Asians) indicates a reduced risk of obesity. Similarly, every year of education above Grade 12 also predicts a lesser likelihood of being obese: for each increase in \texttt{educrec1}, a measure of educational attainment, the odds of being obese drop by $exp(-.16)/(1-exp(-.16))=.46$, or 46\%.
 % 
 %   % [todo: expand on OR] http://www.theanalysisfactor.com/why-use-odds-ratios/
 %   
@@ -172,7 +163,7 @@ To apply this kind of model to your data, you first need to check whether the va
 %     \includegraphics[scale=.5]{images/obese_wald.pdf}
 % 
 %       \caption[Fit statistics in \cmd{estout} output for \cmd{logit} models]{\label{tbl:obese_aic_bic}
-%     Fit statistics in \cmd{estout} output for \cmd{logit} models. See \texttt{help estout} and related online documentation for options.\\
+%     Fit statistics in \cmd{estout} output for \cmd{logit} models. See \statacode{help estout} and related online documentation for options.\\
 %     \nhis{24,187}}
 %   \end{table}%
 % 
@@ -182,7 +173,7 @@ To apply this kind of model to your data, you first need to check whether the va
 %     \includegraphics[scale=.5]{images/obese_ologit.pdf}
 % 
 %       \caption[Fit statistics in \cmd{estout} output for \cmd{logit} models]{\label{tbl:ologit}
-%     Ordinal logit model estimated with \cmd{ologit} and processed with \cmd{leanout}. See \texttt{help estout} and related online documentation for options.\\
+%     Ordinal logit model estimated with \cmd{ologit} and processed with \cmd{leanout}. See \statacode{help estout} and related online documentation for options.\\
 %     \nhis{24,187}}
 %   \end{table}%
 %   
@@ -216,5 +207,13 @@ To apply this kind of model to your data, you first need to check whether the va
 %   \label{sec:bayesian}
 %   %
 %   \emph{Bayesian data analysis} uses Bayes' Theorem to promote another understanding of probability than the one promoted by the Central Limit Theorem and \emph{frequentist} statistics. Instead of relying on normally distributed probabilities, it injects subjective probabilities into the model, in order to reflect prior information accessible to the subjects modeled by the estimator. This approach is quite relevant to social science subjects, given that units of observation like households, governments or companies can be expected to use such information in the formation of their preferences. This approach is also relevant to account for bias in addition to strategic behavior, which eventually makes it very appropriate in many social contexts. Most approaches to multilevel models will introduce you to Bayesian statistics.\footcite[For a book-length introduction with R code, see][but get a serious grip at frequentist statistics first.]{GelmanHill:2007a}
+
+\input{6A_interpretation}%
+%
+\input{6B_diagnostics}%
+%
+\input{6C_interactions}%
+%
+
 % 
 % % end

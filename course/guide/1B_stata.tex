@@ -15,7 +15,7 @@
 	%
 	Most statistical procedures used in these disciplines know some form of implementation in Stata, and the software is supported by a large user community that meets on the Statalist mailing-list and develops packages available through the Statistical Software Components (\SSC) server at Boston University. Overall, it is a solution that provides a good middle ground between a spreadsheet editor and a statistical programming environment. The next sections explain what that means and how Stata works.%
 
-\newthought{The next sections} are based on commands and keyboard shortcuts that appear in Stata~12 for Mac~OS~X (Mac) and Windows (Win).%
+\newthought{The next sections} are based on commands and keyboard shortcuts that appear in Stata~12 for \OSX (Mac) and Windows (Win).%
 		%
 		\footnote{Compatible operating systems are listed at %
 		\url{http://www.stata.com/products/compatible-operating-systems/}. %
@@ -26,9 +26,9 @@
 		
 	\begin{description}
 
-		\item[\smallcaps{On Mac~OS~X}] %
+		\item[\smallcaps{On \OSX}] %
 		%
-		The entire Stata application folder should be located in the \texttt{Applications} folder, and you should drag the Stata application icon to your Dock for quicker access. The \texttt{Cmd} (Command) key used in keyboard shortcuts is the `Apple' key located left and right of the spacebar.%
+		The entire Stata application folder should be located in the \texttt{Applications} folder, and you should drag the Stata application icon to your Dock for quicker access. The \kbd{Cmd} (Command) key used in keyboard shortcuts is the `Apple' key located left and right of the spacebar.%
 
 		\item[\smallcaps{On Windows}] %
 		%
@@ -119,7 +119,7 @@
 			\item[\smallcaps{Running commands}]%
 			\vspace{1em}%
 			%
-			In Stata, focus on the Command window by clicking into it or by pressing \texttt{Cmd-1} (Mac) or\texttt{Ctrl-1} (Win). Type the following command and press \texttt{Enter} to run the command, which means to execute its code:%
+			In Stata, focus on the Command window by clicking into it or by pressing \kbd{Cmd-1} (Mac) or\kbd{Ctrl-1} (Win). Type the following command and press \texttt{Enter} to run the command, which means to execute its code:%
 			
 		\begin{docspec}%
 			\label{lifeexp}%
@@ -149,9 +149,9 @@
 			
 			\includegraphics{lifeexp-sum-error-zz}\\[1em]
 			
-			If you need, as in this example, to correct a mispelled command, or to re-run a command that you have used earlier on, you should \textbf{press \texttt{PageUp} on your keyboard} to recall the previous command that you typed.%
+			If you need, as in this example, to correct a mispelled command, or to re-run a command that you have used earlier on, you should \textbf{press \kbd{PageUp} on your keyboard} to recall the previous command that you typed.%
 			%
-			\footnote{On laptop keyboards, \texttt{PageUp} is usually replaced by \texttt{Fn-UpArrow}. Past commands can also be examined in the Review window.} %
+			\footnote{On laptop keyboards, \kbd{PageUp} is usually replaced by \kbd{Fn-UpArrow}. Past commands can also be examined in the Review window.} %
 			%
 			This allows you to fix your mistake by pulling the last command very quickly and correct only the typo, rather than having to type it again.%
 
@@ -199,7 +199,7 @@
 				\item[\smallcaps{Abbreviations}]%
 					\index{Stata!Syntax}%
 				%
-				Most Stata commands can be abbreviated for quicker use. If you run the \texttt{help summarize} command, the help window will tell you that the \texttt{\underline{su}mmarize} command can be abbreviated to \texttt{su}. Type the following example in Stata to see how the language abbreviates:%
+				Most Stata commands can be abbreviated for quicker use. If you run the \statacode{help summarize} command, the help window will tell you that the \texttt{\underline{su}mmarize} command can be abbreviated to \texttt{su}. Type the following example in Stata to see how the language abbreviates:%
 				%
 				\marginnote{Examples with the \texttt{lifeexp} dataset %
 					continued from p.~\pageref{lifeexp}.}%
@@ -260,8 +260,8 @@
 	
 	The logic of replicability (or reproducibility) outlined here 
 	
-	\newthought{Stata scripts} end with the \texttt{.do} extension and are called \textbf{do-files}.%
-		 \footnote{Stata do-files will usually show as plain text in your Internet browser; if the browser adds a \texttt{.txt} extension to a do-file when downloading it, make sure that you rename the file to \texttt{.do} for Stata to recognize it as a do-file.} %
+	\newthought{Stata scripts} end with the \ext{.do} extension and are called \textbf{do-files}.%
+		 \footnote{Stata do-files will usually show as plain text in your Internet browser; if the browser adds a \ext{.txt} extension to a do-file when downloading it, make sure that you rename the file to \ext{.do} for Stata to recognize it as a do-file.} %
 		%
 		It will be one of your main missions throughout the course to learn how to structure and to write such a document. You will be given plenty of examples through a new course do-file every week, and the short vignette that follows will show you some essential aspects of working in Stata from a do-file.%
 		%
@@ -316,7 +316,7 @@
 
 		\item[\smallcaps{Opening and saving do-files}] Once you are done copying and editing the demo code, save the do-file%
 		%
-		\footnote{Use \texttt{Cmd-S} (Mac) or \texttt{Ctrl-S} (Win) from your keyboard.} %
+		\footnote{Use \kbd{Cmd-S} (Mac) or \kbd{Ctrl-S} (Win) from your keyboard.} %
 		%
 		as \texttt{draft.do} in your \code folder, where you should keep all your do-files within the \SRQM folder.%
 		
@@ -334,11 +334,11 @@
 		
 		\hlred{\textbf{{Note:} opening a do-file by double-clicking it is not recommended}, because Stata will quietly change the working directory to the location of the do-file.} The exact same problem exists with datasets. In both cases, you will have to set the working directory back to being the \SRQM folder.%
 
-		Click anywhere on line 2 of your draft do-file and then press \texttt{Cmd-L} (Mac) or \texttt{Ctrl-L} (Win) to select it in full. Then, press \texttt{Shift+DownArrow} or \texttt{Shift+UpArrow} to select the line below or above it. Finally, press \texttt{Cmd-A} (Mac) or \texttt{Ctrl-A} (Win) to select all three lines.%
+		Click anywhere on line 2 of your draft do-file and then press \kbd{Cmd-L} (Mac) or \kbd{Ctrl-L} (Win) to select it in full. Then, press \kbd{Shift+DownArrow} or \kbd{Shift+UpArrow} to select the line below or above it. Finally, press \kbd{Cmd-A} (Mac) or \kbd{Ctrl-A} (Win) to select all three lines.%
  
  		\item[\smallcaps{Running do-files}]
 
-		To execute a do-file, press \texttt{Cmd-Shift-D} (Mac) or \texttt{Ctrl-D} (Win). The first line is a comment, as indicated by the asterisk at the beginning of the line, so executing it will not accomplish anything: Stata will just print it to the Results window.%
+		To execute a do-file, press \kbd{Cmd-Shift-D} (Mac) or \kbd{Ctrl-D} (Win). The first line is a comment, as indicated by the asterisk at the beginning of the line, so executing it will not accomplish anything: Stata will just print it to the Results window.%
   
 The second and third lines of your do-file will be printed to the Results window with their respective results. The \cmd{cd} command should print the path to your \SRQM folder, and the \cmd{di} command will print a `hello' message, as shown in Figure~\ref{fig:hello-world-result}.
   
@@ -354,7 +354,7 @@ The second and third lines of your do-file will be printed to the Results window
 
 % \item[Keyboard shortcuts]
   
-You can switch between windows from the keyboard: use \texttt{Cmd-`} (Mac) or \texttt{Alt-Tab}. Have a look at the keyboard shortcuts in the `Window' command to learn similar tricks: for example, on Mac~OS~X, \texttt{Cmd-1} switches to the Command window.
+You can switch between windows from the keyboard: use \kbd{Cmd-`} (Mac) or \kbd{Alt-Tab}. Have a look at the keyboard shortcuts in the `Window' command to learn similar tricks: for example, on \OSX, \kbd{Cmd-1} switches to the Command window.
   
 %%% -- old : replication
 
@@ -367,7 +367,7 @@ Comments will also be saved to the log file, which is particularly useful when y
 Finally, open the first course do-file, which is your homework for the first week of class:
 
 \begin{docspec}
-doedit replication/week1
+doedit code/week1
 \end{docspec}
 
 Follow the comments in this do-file to revise this section, learn a few more commands and briefly explore the course datasets.
