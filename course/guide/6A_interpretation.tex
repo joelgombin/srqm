@@ -87,7 +87,7 @@ We will use a breakdown of Table~\ref{tbl:hibbs_yx1_regress} to explain standard
 
 	In the present example, the model `starts' at the constant, $\alpha \approx 45.18$, which is the level of presidential support $\bar Y$ predicted by the model when the \texttt{bread} parameter is null (or, in quick notation, $\alpha = E(Y|X=0)$). This constant is theoretical and not always as meaningful as it is here. This is because from that point, the model predicts that every increase in one unit of the \texttt{bread} variable (real growth in disposable income, in \%) is associated to an increase in $\beta \approx 3.32$. Linear regression is an additive model, and the regression parameter is positive, which is why it makes sense to describe the model as an engine that estimates `constant' presidential support around 45\%, and then predicts a `marginal' increase of 3.3 percentage points in support for each percentage point of real disposable income growth.
 	
-	Table~\ref{tbl:hibbs_yx1x2} illustrates how this rule of calculation stays true when you add variables to perform \emph{multiple linear regression}. Regression coefficients are estimated for each variable while holding all other variables constant at zero value. For that reason, they are ceteris paribus measures that capture the effect of each variable ``all things equal'' i.e. all other model variables held at a constant value of nil. In our example, the addition of the \texttt{death} variable to the model shows that every U.S. fatality per million population reduces presidential support by $\beta_2 X_2=-.05$. This effect is a `net' effect, \emph{independent} of the economic circumstances captured by the \texttt{bread} variable. In parallel, the positive effect of income growth on presidential support is verified while \emph{controlling for} the effect of military fatalities.
+	Table~\ref{tbl:hibbs_yx1x2} illustrates how this rule of calculation stays true when you add variables to perform \emph{multiple linear regression}. Regression coefficients are estimated for each variable while holding all other variables constant at zero value. For that reason, they are ceteris paribus measures that capture the effect of each variable ``all things equal'' \ie all other model variables held at a constant value of nil. In our example, the addition of the \texttt{death} variable to the model shows that every U.S. fatality per million population reduces presidential support by $\beta_2 X_2=-.05$. This effect is a `net' effect, \emph{independent} of the economic circumstances captured by the \texttt{bread} variable. In parallel, the positive effect of income growth on presidential support is verified while \emph{controlling for} the effect of military fatalities.
 
 	\begin{table}[htp]
 		\includegraphics[scale=.5]{images/hibbs_yx1x2.pdf}
@@ -187,7 +187,70 @@ Table~\ref{tbl:hibbs_yx1_estout}, finally, shows a few more commands to format y
     \hibbs}
 \end{table}%
 
-\paragraph{Formatting instructions} See Table~\ref{tbl:estout_reg} at p.~\pageref{tbl:estout_reg} for layout instructions and code.
+\paragraph{Formatting instructions}
+
+%
+%
+%
+\index{Linear regression!Exporting results}
+\paragraph{Regression estimates}
+
+Table~\ref{tbl:hibbs_yx1_predict} shows how to pass several \cmd{predict} commands to store some estimates. We store the fitted values under the name \texttt{yhat} in reference to $\hat{Y}$, the estimated values of the dependent variable $Y$: for every $i=1, \ldots, n$ observations, $Y_i = \hat{Y_i} + \epsilon_i$. To store the residuals in the units of the dependent variable, we use \cmd{predict} with the \coab{resid}{residuals}{predict} option. The standardized residuals, calculated in standard deviations of their own distribution, are stored with the \coab{rsta}{rstandard}{predict} option.
+
+\begin{table}[htp]
+	\includegraphics[scale=.5]{images/hibbs_yx1_predict.pdf}
+
+	\caption[Storing estimates with \cmd{predict}]{\label{tbl:hibbs_yx1_predict}%
+	Storing estimates with \cmd{predict}. %
+	\hibbs}
+\end{table}%
+
+Prior to interpreting the content of the regression table/output, a good idea is to take care of saving the model results straight away, in simplified format.
+
+Table~\ref{tbl:estout_reg} shows regression output exported with \cmd{estout} as shown at p.~\pageref{tbl:hibbs_yx1_estout}. Models are each in a separate column with a short title, and a lot of information has been dropped to reflect the most relevant aspects of the model. If you need more sophisticated output, Ben Jann's online documentation for \cmd{estout} contains useful examples.%
+\footnote{\url{http://repec.org/bocode/e/estout/index.html}.}
+
+% If you are focusing on standardized coefficients, you can produce an even more simplified output with the \opt{beta}{esttab} and \texttt{not} options.
+
+\begin{fullwidth}
+	\begin{table}
+		\footnotesize
+    %
+    \input{T_estout_regression}
+		%
+		\caption{Regression output produced with \cmd{estout}.}
+		\label{tbl:estout_reg}
+	\end{table}
+\end{fullwidth}
+
+To produce this example, we first stored some example specifications of a linear regression model into short names \texttt{m1} to \texttt{m4}. To store a model, simply prefix its command with \texttt{eststo (name): qui}, which will quietly run the model and save it under \texttt{(name)}:
+
+\begin{docspec}
+  * example data\\%
+  use bl\_lu\_25mf undp\_gii wvs\_abort wvs\_theo unna\_pop wdi\_gdpc using data/qog2013, clear\\%
+  * log-transformations\\%
+  gen log\_pop = ln(unna\_pop)\\%
+  la var log\_pop "Log(Population)"\\%
+  gen log\_gdpc = ln(wdi\_gdpc)\\%
+  la var log\_gdpc "Log(GDP per capita)"
+  %% block above repeated from session 5, choose onyl one destination
+  * example models\\%
+  eststo m1: qui reg wvs\_abort bl\_lu\_25mf log\_* c.undp\_gii\#c.wvs\_theo\\%
+  eststo m2: qui reg wvs\_abort bl\_lu\_25mf log\_*\\%
+  eststo m3: qui reg wvs\_abort bl\_lu\_25mf log\_* wvs\_theo\\%
+  eststo m4: qui reg wvs\_abort bl\_lu\_25mf log\_* undp\_gii
+\end{docspec}
+
+Note that the full model has an interaction term, and that the three other models simply show how the model behaves under slightly different specifications. The entire output is exported with a single command, \cmd{esstab}:
+
+\begin{docspec}
+  * export regression output with -estout-\\%
+  esttab m1 m2 m3 m4 using models.csv, ///\\%
+    replace label b(1) se(1) sca(rmse) ///\\%
+  	mti("Full model" "Controls" "Theocracy" "GII")
+\end{docspec}
+
+The \texttt{b(1)} and \texttt{se(1)} options set the unstandardised coefficients and standard errors to one digit precision. The \texttt{sca(rmse)} option adds the RMSE to each model, for which names are set by the \texttt{mti} option.
 
 The \cmd{estout} package is very flexible. The example shown uses only $t$-statistics (option \texttt{t}) and adjusted $R^2$ (option \texttt{ar2}), but you can cook different output with standard errors (option \texttt{se}) and standardized coefficients (option \opt{beta}{esttab}), depending on your preferred method of reading. The next section explains how each of these elements inform the model.
 
@@ -210,7 +273,7 @@ Finally, note that the code used with the \cmd{estout} command actually estimate
       \hibbs}
 	\end{table}%
 	
-	The drastic reduction of information obtained through \cmd{leanout} is a good exercise in itself to check whether you understand regression coefficients correctly. The parameters selected by \cmd{leanout} are expressed in real-world units, which encourages the reader to read standard errors, confidence intervals and the RMSE rather than $p$-values. This approach makes sense, especially when interpreting unstandardized coefficients for untransformed variables, because in that case, you are able to read coefficients in the same metric as the actual variables, such as years, currencies, percentage points or counts (i.e. numbers of something: alcoholic beverages per week, sexual partners in the last five years, whatever).
+	The drastic reduction of information obtained through \cmd{leanout} is a good exercise in itself to check whether you understand regression coefficients correctly. The parameters selected by \cmd{leanout} are expressed in real-world units, which encourages the reader to read standard errors, confidence intervals and the RMSE rather than $p$-values. This approach makes sense, especially when interpreting unstandardized coefficients for untransformed variables, because in that case, you are able to read coefficients in the same metric as the actual variables, such as years, currencies, percentage points or counts (\ie numbers of something: alcoholic beverages per week, sexual partners in the last five years, whatever).
 
 	%If you find it difficult to interpret coefficients without their significance tests with $t$-values and $p$-values, then you are experiencing exactly what any conventional quantitative social researcher would experience in the same situation.
 	Frequentist statistics, like linear regression analysis, insist heavily on measuring the probability level of the null hypothesis. The interpretation of $p$-values, however, is substantively limited: a $p$-value does not indicate the strength of an association, and it does not translate as the chance of a significant association.\footnote{Even when Stata displays a probability level as `\texttt{Pr = 0.000},' it really means that $p < .0001$.}

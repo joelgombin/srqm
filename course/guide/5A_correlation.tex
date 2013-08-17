@@ -120,7 +120,7 @@ Table~\ref{tbl:correlate_export} shows two options. The most straightforward com
 	\qog}
 \end{table}%
 
-Table~\ref{tbl:pwcorr} shows Stata output for the \cmd{pwcorr} command with the \opt{obs}{pwcorr} and \opt{star(.05)}{pwcorr} options, which respectively add the number of pairwise observations and appose an asterisk next to statistically significant correlations at $p < .05$.\footnote{Remember not to vow any cult to the statistical significance asterisk. The magnitude of the correlation coefficient, i.e. its closeness to $-1$ or $+1$, is a more reliable metric (and both quickly corroborate). Visual inspection certainly trumps both measures if your goal is to detect genuinely linear relationships.} This type of table is called a \emph{correlation matrix} and is frequently produced prior to linear regression models.
+Table~\ref{tbl:pwcorr} shows Stata output for the \cmd{pwcorr} command with the \opt{obs}{pwcorr} and \opt{star(.05)}{pwcorr} options, which respectively add the number of pairwise observations and appose an asterisk next to statistically significant correlations at $p < .05$.\footnote{Remember not to vow any cult to the statistical significance asterisk. The magnitude of the correlation coefficient, \ie its closeness to $-1$ or $+1$, is a more reliable metric (and both quickly corroborate). Visual inspection certainly trumps both measures if your goal is to detect genuinely linear relationships.} This type of table is called a \emph{correlation matrix} and is frequently produced prior to linear regression models.
 
 \begin{table}[htp]
 	\includegraphics[scale=.5]{images/abortion_pwcorr.pdf}
@@ -163,7 +163,45 @@ Last, the correlation coefficients for \texttt{wdi\_pop} and its natural logarit
 
   Even when the relationship \emph{is} linear and measured as such, you still need to compare your measures of correlation with your theoretical expectations. A correlation coefficient of $\rho = 0.6$ can be empirically insufficient if your model predicted a stronger linear association between the two variables.
 
-\paragraph{Formatting instructions} See Table~\ref{tbl:estout_corr} at p.~\pageref{tbl:estout_corr} for layout instructions and code.
+The examples below use variables from the \qog{} dataset:%
+
+\begin{docspec}
+  * example data\\%
+  use bl\_lu\_25mf undp\_gii wvs\_abort wvs\_theo unna\_pop wdi\_gdpc using data/qog2013, clear\\%
+  * log-transformations\\%
+  gen log\_pop = ln(unna\_pop)\\%
+  la var log\_pop "Log(Population)"\\%
+  gen log\_gdpc = ln(wdi\_gdpc)\\%
+  la var log\_gdpc "Log(GDP per capita)"
+\end{docspec}
+
+%
+\paragraph{Formatting}%
+  \index{Correlation!Matrixes}%
+  %
+  Table~\ref{tbl:estout_corr} shows a correlation matrix exported with the \cmd{estout} package, as shown at p.~\pageref{tbl:correlate_export}.%
+
+  %
+  % The numbering system saves space on paper, and columns are aligned on the decimal point to increase readability. Variable labels are preferable to less informative variable names. Last, remember to stick a complete caption. \emph{Note:} if you want to use cell colors to `warm up' the table, please feel free to do so, using a soft color theme.
+  %
+\begin{fullwidth}
+	\begin{table}
+		\footnotesize
+    %
+    \input{T_estout_correlation}
+		%
+		\caption{Correlation output produced with \cmd{estout} and edited by adding variable numbers.}
+		\label{tbl:estout_corr}
+	\end{table}
+\end{fullwidth}
+
+\begin{docspec}
+  * export correlation matrix with -estout-\\
+  keep wvs\_abort bl\_lu\_25mf log\_*\\
+  qui estpost correlate *, matrix listwise\\
+  esttab using correlates.csv, ///\\%
+    replace unstack not compress label nonum
+\end{docspec}
 
   % \begin{frame}{Exercise}
   % 

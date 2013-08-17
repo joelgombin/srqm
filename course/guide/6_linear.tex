@@ -34,7 +34,7 @@ The general idea that you get from the empirical example is mathematically appli
 
 [todo]
 
-The generalization of linear models takes two forms. The \emph{General Linear Model} (GLM) is the basic tenet that allows to observe linear relationships in one or more variable(s). Mathematically, it involves building the model as a matrix. \emph{Generalized Linear Models} designate a slightly different form of application that extends the logic of the GLM to non-linear environments, i.e. situations where linearity assumptions cannot hold.
+The generalization of linear models takes two forms. The \emph{General Linear Model} (GLM) is the basic tenet that allows to observe linear relationships in one or more variable(s). Mathematically, it involves building the model as a matrix. \emph{Generalized Linear Models} designate a slightly different form of application that extends the logic of the GLM to non-linear environments, \ie situations where linearity assumptions cannot hold.
 
 % http://www.theanalysisfactor.com/confusing-statistical-term-7-glm/
 
@@ -71,7 +71,7 @@ At it most basic, \emph{simple linear regression} uses one dependent variable $Y
 
 $$Y = \alpha + \beta X + \epsilon$$%  + \underbrace{\epsilon}_{\text{error term}}$$
 
-The parameters $\alpha$ and $\beta$ allow you to measure precisely how $Y$ depends on $X$ by defining the \emph{linear} function $Y = \alpha + \beta X$, where $\beta$ is the \emph{coefficient} that measures the effect of $X$ on $Y$, and $\alpha$ is the \emph{constant} value of $Y$ when $X = 0$.\footnote{In a graph, the constant is the \emph{intercept}, i.e. the intersection of the regression line $y = a + bx$ with the vertical axis $y$ when $x = 0$ and $y = a$ . The coefficient is the \emph{slope} of the regression line.}
+The parameters $\alpha$ and $\beta$ allow you to measure precisely how $Y$ depends on $X$ by defining the \emph{linear} function $Y = \alpha + \beta X$, where $\beta$ is the \emph{coefficient} that measures the effect of $X$ on $Y$, and $\alpha$ is the \emph{constant} value of $Y$ when $X = 0$.\footnote{In a graph, the constant is the \emph{intercept}, \ie the intersection of the regression line $y = a + bx$ with the vertical axis $y$ when $x = 0$ and $y = a$ . The coefficient is the \emph{slope} of the regression line.}
 
 With a bit of matrix algebra and computational power, this function can be adapted to derive the constant $\alpha$ and $\beta$ coefficients for any number of independent variables, by treating $X$ as a \emph{vector} of variables. \emph{Multiple linear regression} designates a class of additive models where the linear function takes the following form for $p$ variables and for each unit $i$ out of $n$ observations in the sample:
 
@@ -120,7 +120,7 @@ To apply this kind of model to your data, you first need to check whether the va
 % 
 %   % splice the data: loess
 %   
-%   Another way to amend regression analysis is to change the central component of the model, the mean value of the dependent variable $\bar Y$, and to replace it by another value of $Y$, such as its median or any other percentile. By doing so, you are telling your model to `regress' towards a different value than the average value of $Y$, i.e. to maximize predicted variance in relation to a substantive (rather than null) value of the dependent variable.
+%   Another way to amend regression analysis is to change the central component of the model, the mean value of the dependent variable $\bar Y$, and to replace it by another value of $Y$, such as its median or any other percentile. By doing so, you are telling your model to `regress' towards a different value than the average value of $Y$, \ie to maximize predicted variance in relation to a substantive (rather than null) value of the dependent variable.
 % 
 %   The \cmd{qreg} command performs these types of \emph{quantile regression}, which are useful for linear models where there is more than one linear effect in the model, as with relationships that show thresholds. For example, if your dependent variable is influenced primarily by an independent variable $X_1$ until it reaches a certain level, it might then be better predicted by another variable $X_2$ in the remaining part of the relationship. In that case, the distribution of $Y$ is better predicted by two separate models $Y = \alpha + \beta X_1 + \beta X_2 + \cdots + \beta X_p + \epsilon$, which you can combine to just one model by regressing to the approximate value of $Y$ where both models converge.
 % 
@@ -129,13 +129,13 @@ To apply this kind of model to your data, you first need to check whether the va
 %   \paragraph{Regression for categorical data}%
 %   \label{ch:log}\index{Logistic regression}%
 %   %
-%   Linearity and normality are irrelevant when your dependent variable is not a continuous measure of interval data. If you are analyzing categorical data, such as nominal categories or dichotomous/binary outcomes of the ``yes/no'' form, as well as independent event counts\index{Data!Count data} where each event is probabilistically equivalent to a `repeated trial' following a Poisson distribution (e.g. road traffic accidents), then the principles underlying \emph{logistic regression} will better capture the probability distribution of your data.
+%   Linearity and normality are irrelevant when your dependent variable is not a continuous measure of interval data. If you are analyzing categorical data, such as nominal categories or dichotomous/binary outcomes of the ``yes/no'' form, as well as independent event counts\index{Data!Count data} where each event is probabilistically equivalent to a `repeated trial' following a Poisson distribution (\eg road traffic accidents), then the principles underlying \emph{logistic regression} will better capture the probability distribution of your data.
 % 
 %   Logistic regression models your data differently from linear regression. Instead of modeling the \emph{expected values} of the dependent variable $Y$ given the values of independent variable(s) $X$, which is written $E(Y|X)$, it models the \emph{probability} of $Y$ at each value of $X$, which is written $Pr(Y=1|X)$. The \cmd{logit} command, as well as its ordinal and multinomial versions \cmd{ologit} and \cmd{mlogit}, produce different versions of this model for ordinal and nominal data.\footnote{There are also \cmd{probit} commands that produce identical models under slightly different settings in their link function, with different results towards the tails of the probability distribution. In practice, you might prefer \cmd{logit} for its easily interpretable output, and switch to \cmd{probit} in advanced settings like multilevel models with \cmd{mvprobit}.}
 % 
 %   Stata offers a wide list of commands to perform regression with categorical data, and Stata~12 offers new commands to plot the marginal effects\index{Logistic regression!Marginal effects}\index{Marginal effects|seealso{Logistic regression}} of predictors in a logistic regression, which gives you very fine tuning over the actual effects of each independent variable. A full-fledged course would be needed to introduce how logistic regression works, and an excellent handbook by \citeauthor{LongFreese:2001a} is available for regression models with categorical data in Stata.\footcite{LongFreese:2001a}
 % 
-%   If your dependent variable is lowly dimensional, such as a 4-point scale outcome that might be further simplified into a 0--1 dichotomy by grouping ``disagree'' and ``agree'' answers, you can take a quick look at logistic regression straight away. Make sure that your dependent variable is either binary, discrete (i.e. nominal) or split into ordered categories, as with ``very much---not at all'' attitudinal scales.
+%   If your dependent variable is lowly dimensional, such as a 4-point scale outcome that might be further simplified into a 0--1 dichotomy by grouping ``disagree'' and ``agree'' answers, you can take a quick look at logistic regression straight away. Make sure that your dependent variable is either binary, discrete (\ie nominal) or split into ordered categories, as with ``very much---not at all'' attitudinal scales.
 %   
 %   Table~\ref{tbl:logit} shows how to run a logistic regression, simply by substituting the \cmd{logit} command to the \cmd{reg} command. The model in this example tries to predict whether individuals from a sample of American adults are obese by looking at their age, sex, educational attainment, race and physical activity. The \opt{nolog}{logit} option simply reduces the amount of output.
 %   
@@ -153,7 +153,7 @@ To apply this kind of model to your data, you first need to check whether the va
 % 
 %   % [todo: expand on OR] http://www.theanalysisfactor.com/why-use-odds-ratios/
 %   
-%   Table~\ref{tbl:logodds} shows how \emph{odds ratios}\index{Odds ratios!Logistic regression}\index{Odds ratios|seealso{Logistic regression}} offer to read logistic coefficients, by taking the exponents $e^\beta$ of the log odds. The \opt{or}{logit} option replaces log odds with odds ratios in a \cmd{logit} output. These ratios read as increases in proportions: in this model, the risk of obesity is 67\% i.e. two thirds higher among Blacks than it is among Whites. Odds ratios inferior to 1 denote, on the contrary, a reduction in likelihood, as with Asians, who are $.32$  i.e. one third \emph{less} likely to be obese than Whites.
+%   Table~\ref{tbl:logodds} shows how \emph{odds ratios}\index{Odds ratios!Logistic regression}\index{Odds ratios|seealso{Logistic regression}} offer to read logistic coefficients, by taking the exponents $e^\beta$ of the log odds. The \opt{or}{logit} option replaces log odds with odds ratios in a \cmd{logit} output. These ratios read as increases in proportions: in this model, the risk of obesity is 67\% \ie two thirds higher among Blacks than it is among Whites. Odds ratios inferior to 1 denote, on the contrary, a reduction in likelihood, as with Asians, who are $.32$  \ie one third \emph{less} likely to be obese than Whites.
 % 
 %   \begin{table}[htp]
 %     \includegraphics[scale=.5]{images/obese_logodds.pdf}

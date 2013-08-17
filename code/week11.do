@@ -1,4 +1,10 @@
 
+* Check setup.
+run setup/require estout fre leanout renvars scheme-burd spineplot
+
+* Log results.
+cap log using code/week11.log, replace
+
 /* ------------------------------------------ SRQM Session 11 ------------------
 
    F. Briatte and I. Petev
@@ -35,23 +41,7 @@
 
 ----------------------------------------------------------------------------- */
 
-
-* Install required commands.
-foreach p in estout fre spineplot {
-	cap which `p'
-	if "`p'" == "scheme-burd" cap which scheme-burd.scheme // name fix
-	if _rc == 111 cap noi ssc install `p'
-}
-
-* Log results.
-cap log using code/week11.log, replace
-
-
-* ====================
-* = DATA DESCRIPTION =
-* ====================
-
-
+* Load ESS dataset.
 use data/ess2008, clear
 
 * Country-specific design weight, multiplied by country-level population weight.
@@ -71,7 +61,7 @@ encode cntry, gen(cid)
 d stf*
 
 * Rename DV and a bunch of covariates
-ren (stfhlth stfedu stfgov) (hsat esat gsat)
+renvars stfhlth stfedu stfgov \ hsat esat gsat
 
 * Country-specific distributions.
 tab cntry, su(hsat)

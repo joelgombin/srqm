@@ -31,7 +31,7 @@
 
 	Stata can only open one dataset at the time and opens data silently: if the operation succeeds, nothing is printed on screen, except for a short message if the dataset has been labelled by its creator. All datasets for this course are slightly modified versions of the original ones%
 		%
-		\footnote{See the \README file of the \data folder for details on the course datasets: follow the link at p.~\pageref{data-readme} or turn to the appendix at p.~\pageref{ch:data-sources}.} %
+		\footnote{See the course appendix at p.~\pageref{sec:data-sources}.} %
 		%
 		and will print a short message when opened:\\[1em]
 
@@ -167,7 +167,7 @@ The \cmd[ren]{rename} command succeeds silently, with no output:
 	\includegraphics{qog-ren}
 
 \index{Variables!Labels}\index{Labels!For variables}%
-Then, you might also want to adjust \emph{variable labels}, which are the short pieces of text attached to each variable. Use the \cmd[la var]{label variable} command to change the variable label to something meaningful, e.g. mentioning the unit of measurement of the variable. This example renames and relabels the \texttt{lrscale} variable in the \ess:
+Then, you might also want to adjust \emph{variable labels}, which are the short pieces of text attached to each variable. Use the \cmd[la var]{label variable} command to change the variable label to something meaningful, \eg mentioning the unit of measurement of the variable. This example renames and relabels the \texttt{lrscale} variable in the \ess:
 
 	\begin{docspec}
 		use data/ess2008, clear\\
@@ -177,7 +177,7 @@ Then, you might also want to adjust \emph{variable labels}, which are the short 
 
 It is generally a good idea to have variable labels that will provide something informative to graphs where they appear as axis titles. Short titles with some indication of the underlying coding scheme usually do the trick.
 
-One last aspect of data preparation that might be of some use is to subset (i.e. to restrict) the dataset to the variables that you are going to use. To do so, pass the names of your variables to the \cmd{keep} option, as in \statacode{keep v1 v2 v3} etc. I however strongly suspect this requirement to be some form of older computing age legacy that would now apply only in only few cases of large data and small memory, so I recommend \emph{not} doing this by default.
+One last aspect of data preparation that might be of some use is to subset (\ie to restrict) the dataset to the variables that you are going to use. To do so, pass the names of your variables to the \cmd{keep} option, as in \statacode{keep v1 v2 v3} etc. I however strongly suspect this requirement to be some form of older computing age legacy that would now apply only in only few cases of large data and small memory, so I recommend \emph{not} doing this by default.
 
 \newthought{Essential data skills} include being able to further distinguish between types of variables (p.~\pageref{sec:variable-types}), to encode missing values so that the software recognizes them (p.~\pageref{sec:missing-values}), and to recode variables to alternative groups and categories (p.~\pageref{sec:categorical-recodes}).
 

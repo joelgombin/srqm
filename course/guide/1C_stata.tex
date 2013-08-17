@@ -1,7 +1,7 @@
 %
 % 1.3
 %
-\section{Using Stata}%
+\section{Working with Stata}%
 	%
 	%
 	\label{sec:stata}%
@@ -9,37 +9,6 @@
 	%
 	%
 	
-	\newthought{This course uses Stata} as its statistical software of choice. Stata is used by many social scientists working with quantitative data in areas such as economics and political science.%
-	%
- 	\footnote{For example, you will find Stata output in some of Nate Silver's work at the \emph{New York Times} on his `FiveThirtyEight' electoral blog; see, e.g., ``'\href{http://fivethirtyeight.blogs.nytimes.com/2012/03/12/polling-in-deep-south-has-posed-challenges/}{Polling in Deep South Has Posed Challenges},'' 12 March 2012.} %
-	%
-	Most statistical procedures used in these disciplines know some form of implementation in Stata, and the software is supported by a large user community that meets on the Statalist mailing-list and develops packages available through the Statistical Software Components (\SSC) server at Boston University. Overall, it is a solution that provides a good middle ground between a spreadsheet editor and a statistical programming environment. The next sections explain what that means and how Stata works.%
-
-\newthought{The next sections} are based on commands and keyboard shortcuts that appear in Stata~12 for \OSX (Mac) and Windows (Win).%
-		%
-		\footnote{Compatible operating systems are listed at %
-		\url{http://www.stata.com/products/compatible-operating-systems/}. %
-		%
-		We use the `Standard Edition' (\textsc{se}) of Stata that works on most current hardware.} %
-		%
-		Both systems run Stata almost similarly, with only a few notable differences:% 
-		
-	\begin{description}
-
-		\item[On \OSX] %
-		%
-		The entire Stata application folder should be located in the \texttt{Applications} folder, and you should drag the Stata application icon to your Dock for quicker access. The \kbd{Cmd} (Command) key used in keyboard shortcuts is the `Apple' key located left and right of the spacebar.%
-
-		\item[On Windows] %
-		%
-		The entire Stata application folder should be located in the \texttt{Program Files} folder, or whatever your version of Windows call it, and you should drag the Stata application icon to your Taskbar for quicker access. You might use either the 32-bit or 64-bit version of the software.%
-
-	\end{description}
-
-	The course should run fine on older versions of Stata, given very minor adjustments to the code. The course setup has been tested on Sciences Po workstations equipped with Stata~11, for which it automatically adjusts memory and circumvents admin restrictions to install packages.%
-  \footnote{Known issues and fixes are documented at %
-		\url{https://github.com/briatte/srqm/wiki/troubleshooting}}%
-		
 		
 % 0.3.1
 %
@@ -69,7 +38,7 @@ Your use of Stata in this course will remind you of a few things that you might 
 
 Statistical programming, on the other end, is probably new to you. Its general principle works more or less like writing music for a single musician: you have to compose a sequence of instructions that enables anyone to play your stuff. The current de facto standard in statistical programming is R, a free and open source software with excellent graphics support that lets you crunch numbers like a statistician would want you to: neatly, if at the cost of intuitiveness.%
 	%
-	\footnote{For example, in R, the number `2' is not just a number (i.e. a scalar), it is a vector of length 1 of numeric class.} %
+	\footnote{For example, in R, the number `2' is not just a number (\ie a scalar), it is a vector of length 1 of numeric class.} %
 	%
  	R users know that its sheer complexity and subtle idiosyncracies create a steeper learning curve for new users, and that there is ``something not fully healthy''%
 	\footnote{%
@@ -87,18 +56,6 @@ Stata has its own limitations. Its graphics engine is not bad, but it is far fro
 	%
 	%
 
-\newthought{You can find help} for Stata in the series of manuals and handbooks published by Stata Press. Appropriate references for this course are the ``Getting Started'' manuals, which cover the same basic operations as this guide.%
-  \footnote{See \url{http://www.stata-press.com/}. %
-  The \emph{Stata Journal} is another Stata Press publication that describes new packages and user tips.}%
-  StataCorp also runs a blog and a video channel of Stata tutorias.\footnote{\url{http://blog.stata.com/2012/09/26/stata-youtube-channel-announced/}}
-  
-The course website features a list of additional online resources to learn Stata. One particularly interesting resource for beginners is the Stata video series by the LSE Methodology Institute.%
-  \footnote{\url{http://www.youtube.com/user/MethodologyLSE/videos?query=stata}} %
-  Stata users also share questions and answers on Statalist%
-  \footnote{\url{http://stata.com/statalist/}} %
-  and on Stackoverflow.%
-  \footnote{\url{http://stackoverflow.com/questions/tagged/stata}}
-
 % 0.3.2.
 %
 \index{Computers!Graphical User Interface (GUI)}%
@@ -106,6 +63,7 @@ The course website features a list of additional online resources to learn Stata
 \index{Stata!Command line interface}%
 %
 \subsection{Working from the command line} %
+  \label{sec:cli}
 %
 % graphical user interface
 % command line
@@ -126,7 +84,7 @@ We are going to explore Stata from the command line, which relies only on three 
 % The Stata GUI can be used occasionally for routine operations that need not appear in your do-files. Keyboard shortcuts also save some time, as with ‘File > Open…’ (Ctrl-O in Stata for Windows) or ‘File > Change Working Directory…’ (Cmmd-Shift-J in Stata for Macintosh; this document uses ‘Cmmd’ to designate the ‘’, a. k. a. ‘Command’, ‘Cmd’ or ‘Apple’ modifier key).
 
 The next sections explain how to run commands in Stata, and how to organize them into a do-file. A list of all commands used in the guide appear in the index, and a list of all commands used in the course appear on the course wiki.%
-	\footnote{\url{https://github.com/briatte/srqm/wiki/synopsis}}%
+	\footnote{\url{https://github.com/briatte/srqm/wiki/code}}%
 
 	\paragraph{Running commands}
   
@@ -223,6 +181,18 @@ The next sections explain how to run commands in Stata, and how to organize them
 		\end{docspec}
 
     Getting to use the Stata help pages is a course objective in itself: even experienced Stata users use help pages on a daily basis. The details on each option and the final examples are often very useful in learning to use some commands efficiently.%
+
+    \newthought{You can find additional help} for Stata in the series of manuals and handbooks published by Stata Press. Appropriate references for this course are the ``Getting Started'' manuals, which cover the same basic operations as this guide.%
+      \footnote{\url{http://www.stata-press.com/}} %
+      StataCorp also publishes the \emph{Stata Journal}, a blog and a video channel of Stata tutorials.%
+      \footnote{\url{http://blog.stata.com/2012/09/26/stata-youtube-channel-announced/}}
+  
+    The course website features a list of additional online resources to learn Stata. One particularly interesting resource for beginners is the Stata video series by the LSE Methodology Institute.%
+      \footnote{\url{http://www.youtube.com/user/MethodologyLSE/videos?query=stata}} %
+      Stata users also share questions and answers on Statalist%
+      \footnote{\url{http://stata.com/statalist/}} %
+      and on Stackoverflow.%
+      \footnote{\url{http://stackoverflow.com/questions/tagged/stata}}
 
 %
 %
@@ -360,13 +330,21 @@ The second and third lines of your do-file will be printed to the Results window
 
 \hlred{\textbf{Important:} check your commands for typos and syntax errors.} If your code fails to execute, Stata will send some red ink to the Results window. Check the code against the correct syntax, looking for forgotten (or extra) letters or spaces.%
 
-\hlred{\textbf{Important:} be careful with copy-pasting to the Command window.} Copy-pasted commands that contain line breaks (\cmd{///}), for example, will not work properly. This point is covered again in the first course do-file.
+\hlred{\textbf{Important:} be careful with copy-pasting to the Command window.} Copy-pasted commands that contain line breaks (\cmd{///}), for example, will not work properly. This point is covered again in the first course do-file.%
 
-\paragraph{Keyboard shortcuts}
+\hlred{\textbf{Tip:}} start using keyboard shortcuts as early as possible. For example, during class, you will often need to switch from a window to another one. This can be done from the keyboard: use \kbd{Cmd-`} (Mac) or \kbd{Alt-Tab} (Win). Have a look at the `Window' menu for other shortcuts in: for example, on \OSX, \kbd{Cmd-1} switches to the Command window.%
 
-During class, you will often need to switch from a window to another one. This can be done from the keyboard: use \kbd{Cmd-`} (Mac) or \kbd{Alt-Tab} (Win). Have a look at the other shortcuts in the `Window' menu for more tricks: for example, on \OSX, \kbd{Cmd-1} switches to the Command window.%
+Homework for this course has three different components, the first of which is the replication do-file. You will be distributed one do-file every week. We will start replicating the do-file in class, and you will be asked to finish replicating it at home.%
 
+\newthought{Your weekly mission} is to replicate each weekly do-file by reading through \filename{week1.do} to \filename{week12.do}. If you have correctly run through the setup described in Section~\ref{sec:course-setup}, the following command will open the do-file for Week~1:%
 
+\begin{docspec}
+  doedit code/week1.do
+\end{docspec}
+
+Read through the do-file and execute (run) its commands sequentially, after reading the comments that precede each block of code. This practice (replicating the course do-files) will show you how to code various things in Stata.%
+
+\newthought{There is one do-file to replicate per week of class.} The do-file for the first week covers basic Stata settings and data exploration commands. Each section of this guide opens on a short introduction that will indicate which do-file it corresponds to.%
 
 %%% -- TODO: rewrite
 \paragraph{Logging your work}
@@ -384,10 +362,24 @@ Get some practice with do-files as soon as possible, since your coursework will 
 
 % % %
 
-Finally, open the first course do-file, which is your homework for the first week of class:
+\paragraph{Exiting}
+
+When you are done with your work, just quit Stata like you would quit any other program. Stata will ask you whether you want to save your changes: \textbf{say no}.%
+
+In this course, you will \hlred{never save any changes to the original datasets}: keep the teaching material intact at all times, so that it can be used throughout the semester.%
+
+More generally, because you will be coding every modification that you make to the course datasets, your analysis will be fully replicable from the original datasets.%
+
+\newthought{The nerdy way to quit Stata} is to quit from the command line. A first optional step is to manually close all opened logs:%
 
 \begin{docspec}
-doedit code/week1
+	* Close all open logs.\\%
+	log close \_all
 \end{docspec}
 
-Follow the comments in this do-file to revise this section, learn a few more commands and briefly explore the course datasets.
+The \cmd{exit} command with the \opt{clear}{exit} option then erases any data in memory and quits:%
+
+\begin{docspec}
+	* Enjoy your day.\\%
+	exit, clear
+\end{docspec}

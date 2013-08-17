@@ -1,13 +1,17 @@
 
+* Check setup. This line appears in every course do-file. It makes sure that
+* you have the appropriate files and packages to successfully run the code.
+run setup/require fre lookfor_all
+
 /* ------------------------------------------ SRQM Session 1 -------------------
 
    F. Briatte and I. Petev
 
-   Hi! Welcome to your first SRQM do-file.
+ - Hi! Welcome to your first SRQM do-file.
 
  - You are probably viewing this file from the Stata do-file editor, after
    opening it with the -doedit code/week1- command. If so, you are
-   doing it right: congratulations!
+   doing it right: congratulations.
    
  - You will be reading through your first do-file in just a minute. It is
    essential that you read through each week's do-file to become familiar
