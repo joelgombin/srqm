@@ -37,7 +37,7 @@ cap log using code/week11.log, replace
    with health services can be predicted from political views, independently
    of age, sex, health status and financial situation.
    
-   Last updated 2013-05-31.
+   Last updated 2013-08-17.
 
 ----------------------------------------------------------------------------- */
 

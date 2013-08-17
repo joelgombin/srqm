@@ -25,7 +25,7 @@ run setup/require fre lookfor_all
    research project. Practice with Stata by trying out commands as you learn
    them. If things do not work out, try again after checking the command syntax.
 
-   Last updated 2013-05-29.
+   Last updated 2013-08-17.
 
 ----------------------------------------------------------------------------- */
 
