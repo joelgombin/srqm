@@ -8,6 +8,7 @@
 
 admin
 
+course/*
 course/*-cuts*
 course/stata-guide-2012.pdf
 course/slides/*
