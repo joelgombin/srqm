@@ -7,7 +7,7 @@ cap log using code/week6.log, replace
 
 /* ------------------------------------------ SRQM Session 6 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev and J. Gombin
 
  - TOPIC:  Opposition to Torture in Israel
  
@@ -49,12 +49,12 @@ cap log using code/week6.log, replace
    the proportions test, the Chi-squared test and finally linear correlation.
    The Stata Guide also covers these tests. Make sure to read what you need to!
 
-   Last updated 2013-08-17.
+   Last updated 2013-10-17.
 
 ----------------------------------------------------------------------------- */
 
-* Load ESS dataset.
-use data/ess2008, clear
+* Load ESS dataset, Round 4.
+use data/ess0810 if essround == 4, clear
 
 * Survey weights.
 svyset [pw = dweight] // weighting scheme set to country-specific population
@@ -66,9 +66,21 @@ renvars rlgdnm lrscale tvpol \ denom pol tv            // religion, politics
 * Have a quick look.
 codebook cntry age sex income edu denom pol tv, c
 
+* Inspect religious variables further.
+tab denom rlgblg, miss nolab
+
+* Add non-religious to denominations.
+replace denom = 0 if rlgblg == 2
+
+* Append the value label accordingly.
+la de rlgdnm 0 "Not religious", add
+
 
 * Subsetting
 * ----------
+
+* Check how much data is missing.
+misstable pat cntry age sex income edu denom pol tv
 
 * Delete incomplete observations.
 drop if mi(age, sex, income, edu, denom, pol, tv)
@@ -97,29 +109,38 @@ recode trrtort ///
     (3 = .) (else = .), gen(torture)
 la var torture "Opposition to torture"
 
-* Average opposition to torture in Europe.
+* Average opposition to torture in the European sample.
 fre torture
 tab torture [aw = dweight * pweight] // weighted by overall European population
 
-* Average opposition to torture in each country.
+* Average opposition to torture in each country sample.
 gr dot torture [aw = dweight], over(cntry, sort(1) des) scale(.75) ///
     name(torture2, replace)
 
-* Create a dummy for Israel vs. other European countries.
+* Create a dummy for Israeli respondents.
 gen israel:israel = (cntry == "IL")
 la def israel 1 "Israel" 0 "Other EU"
 
 * Estimate DV proportions in Israel.
-prop torture if israel
+svy: prop torture if israel
 
 * Compare average opposition to torture inside and outside Israel.
 prtest torture, by(israel)
 
-* Subset to all European countries but Israel.
+* Subset to respondents in Israel.
 keep if israel
 
 * Final sample size.
 count
+
+* Note that the sample is deliberately not representative of the general
+* population of Israel. We took that step when we dropped respondents who did
+* not provide a political placement or an income measure, and again when we
+* removed neutral answers (the "neither-or" response item) to the original
+* survey question. To work on a representative sample, you would need to keep
+* all observations and apply survey weights (which were corrected in August 2013
+* after it emerged that the original data contained faulty weights for Israel).
+* A further and more advanced step would be to impute missing values of income.
 
 
 * ======================
@@ -215,15 +236,12 @@ tab torture faith3, row nof    // rows percentages
 
 * Chi-squared test:
 tab torture faith3, exp chi2 // expected frequencies
-tabchi torture faith3, noe p // Pearson residuals
+tabchi torture faith3, noe p // Pearson residuals, no expected frequencies
 
 * Create a binary variable for each category.
 tab faith3, gen(faith_)
 d faith_?
 codebook faith_?, c
-
-* Inspect underlying distribution by country.
-tab cntry faith3
 
 * Comparing Christian respondents to all others.
 prtest torture, by(faith_1)
@@ -260,12 +278,12 @@ tab torture pol3, exp chi2   // expected frequencies
 
 fre tv
 
+* Alternative reading (plot).
+tab tv, plot
+
 * Alternative reading (binary mean). The nolabel (nol) option gets rid of the
 * value labels and makes the output table a tad softer on the reader's eye.
 tab tv, summ(torture) nol
-
-* Alternative reading (plot).
-tab tv, plot
 
 * Recoding to binary.
 recode tv (0/3 = 0 "Low") (4/7 = 1 "High"), gen(media)

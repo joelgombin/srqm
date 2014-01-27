@@ -4,11 +4,13 @@
 % Regression diagnostics
 
 \documentclass[t]{beamer}
-\usetheme{\usetheme{hkllite}}
+\usetheme{hkllite}
 
 \title{linear regression}
-	\author{François Briatte \& Ivaylo Petev}
+	\author{François Briatte, Ivaylo Petev \& Joël Gombin}
 	\date{Week~\#10}
+
+	%% actually no slides for week 9, general summary of what has already been done until now. Combine weeks 9 and 10 programs on regression. 
 
 \graphicspath{{images/}}
 
@@ -94,7 +96,8 @@
 
 	\begin{frame}[t]{\texttt{reg births schooling log\_gdpc\red{, beta}}}
 
-		Each variable can be normalized to fit $\mathcal{D} \sim \mathcal{N}(0,1)$, so that their \red{standardized coefficients} have comparable standard deviation units:
+%		Each variable can be normalized to fit $\mathcal{D} \sim \mathcal{N}(0,1)$, so that their \red{standardized coefficients} have comparable standard deviation units:
+		Each variable can be normalized to have a mean of 0 and a standard deviation of 1, so that their \red{standardized coefficients} have comparable standard deviation units:
 		
 		\includegraphics[scale=.45]{mreg-output-beta.pdf}
 
@@ -184,7 +187,6 @@
 		\begin{block}{Interaction terms}
 
 			\begin{itemize}
-				\item Use \texttt{vif} to detect variables with $VIF > 10$
 				\item Use \texttt{\#} and \texttt{\#\#} to capture interactions
 				\item Use \texttt{c.} to interact continuous variables
 			\end{itemize}
@@ -194,7 +196,12 @@
 
 		\begin{alertblock}{Variance inflation}
 
-			Variables that strongly interact induce \red{multicollinearity} `inside' your model, making standard errors unreliable.
+			Variables that strongly interact induce \red{multicollinearity} `inside' your model, making standard errors unreliable and coefficient estimates unstable.
+			\begin{itemize}
+				\item 	 Use \texttt{vif} to detect variables with $VIF > 10$
+			\end{itemize}
+			
+
 
 		\end{alertblock}
 

@@ -7,11 +7,11 @@ cap log using code/week5.log, replace
 
 /* ------------------------------------------ SRQM Session 5 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev and J. Gombin
 
  - TOPIC:  Social Determinants of Adult Obesity in the United States
 
- - DATA:   U.S. National Health Interview Survey (2009)
+ - DATA:   U.S. National Health Interview Survey (2011)
 
    We study variations in the Body Mass Index (BMI) of insured and uninsured
    American adults, in order to show how differences observed between racial
@@ -27,64 +27,28 @@ cap log using code/week5.log, replace
    in poorer households, possibly affecting BMI across the life course.
    
    Our data come from the most recent year of the National Health Interview
-   Survey (NHIS). The sample used in the analysis contains = 21,770 individuals
+   Survey (NHIS). The sample used in the analysis contains = 33,014 individuals
    selected through state-level stratified probability sampling.
-
- - The lines above are a quick example of what you should be planning to write
-   up in your first draft: a description of your data, followed by a list of
-   clearly worded and substantively informed hypotheses.
-
- - Please make sure that your do-file is named like 'Briatte_Petev_1.do' (use
-   your own family names, in alphabetical order). Name your paper the same way
-   and print it to PDF format: do not circulate your work in editable formats.
- 
- - To simplify your workflow, the course uses a paper template that you will
-   share with your research partner(s) using Google Documents. This template  
-   contains more instructions on the first draft.
-   
- - Your first draft must inform the reader about simple things: What is your
-   research question? Where does your data come from, how large is the sample
-   and how was it designed? Include references to the data source and codebook.
-   
- - Your paper also explains what choice of variables you have made, and with
-   what theory to support that choice. You have to substantiate your decisions:
-   providing a mere description of the measurements is insufficient.
-    
- - In line with that idea, do NOT write your paper as a technical summary of
-   what your code accomplishes: refer to variables not by names but by what they
-   actually measure, and explain how they fit in your general reasoning.
-
- - Remember that you have been provided with example papers: use them to learn
-   about the writing style and scientific tone to adopt in your own work. This
-   requirement is covered at more length in the rest of the course material.
-
- - Your first do-file can imitate the course do-files in its structure. Your
-   code should assess DV normality and explore differences in the DV with graphs
-   and confidence intervals over categorical IVs. Analyze results in your paper.
- 
- - Importantly, do NOT produce results in your do-file if you are not going to
-   interpret them at a later stage: produce meaningful code that leads you to
-   learn, understand and analyze the data.
   
  - Use the -stab- command at the end of this do-file to export summary stats
    to a simple table. The result will be a plain text file that you can copy
    and paste into Google Documents, or import into any other text editor.
 
-   Last updated 2013-08-17.
+   Last updated 2013-10-10.
 
 ----------------------------------------------------------------------------- */
 
-* Load NHIS data.
-use data/nhis2009, clear
+* Load NHIS data for latest survey year.
+use data/nhis9711 if year == 2011, clear
 
-* Individual survey weights.
+* Set individual survey weights.
 svyset psu [pw = perweight], strata(strata)
 
 
 * Dependent variable: Body Mass Index
 * -----------------------------------
 
-gen bmi = weight * 703 / height^2
+gen bmi = weight * 703 / height^2 if weight < 996 & height < 96
 la var bmi "Body Mass Index"
 
 * Detailed summary statistics.
@@ -107,10 +71,6 @@ la def bmi6 ///
 d bmi bmi6
 tab bmi6, su(bmi)
 
-* Progression of BMI groups over years.
-spineplot bmi6 year, scheme(burd6) ///
-    name(bmi6, replace)
-
 * Breakdown of BMI to percentiles.
 xtile bmi_qt = bmi, nq(100)
 
@@ -129,7 +89,7 @@ sc bmi_qm bmi_qt, m(o) c(l) xla(0(10)100) ///
 * Independent variables
 * ---------------------
 
-fre age sex raceb educrec1 earnings health uninsured ybarcare, r(10)
+fre age sex raceb earnings health uninsured pooryn, r(10)
 
 * Recode age to four groups (slow and risky method: using manual categories).
 recode age ///
@@ -148,26 +108,31 @@ gen female:female = (sex == 2) if !mi(sex)
 la def female 0 "Male" 1 "Female", replace
 
 * Recode missing values of income.
-replace earnings = . if inlist(earnings, 97, 99)
+replace earnings = . if !earnings | earnings > 96 
 
 * Recode missing values of insurance and medical care.
-mvdecode ybarcare uninsured, mv(9)
+mvdecode uninsured pooryn, mv(0,7,8,9)
+
+* Recode insurance status to dummy.
+recode uninsured (1 = 0 "Uninsured") (2 = 1 "Insured") (9 = .), gen(uninsured2)
+la var uninsured2 "Health Insurance coverage status (dummy)"
+
+* Recode poverty threshold (note: different from FPL threshold) to dummy.
+gen poor:poor = (pooryn == 2) if !mi(pooryn)
+lab def poor 0 "Above poverty threshold" 1 "Below poverty threshold", replace
 
 
 * Subsetting
 * ----------
 
-* Select observations from most recent year.
-keep if year == 2009
-
 * Patterns of missing values.
-misstable pat bmi age female raceb educrec1 earnings health uninsured ybarcare
+misstable pat bmi age female raceb earnings health uninsured2 poor
 
 * Delete incomplete observations.
-drop if mi(bmi, age, female, raceb, educrec1, earnings, uninsured, ybarcare)
+drop if mi(bmi, age, female, raceb, earnings, uninsured2, poor)
 
 * Final data, showing final sample size.
-codebook bmi age female raceb educrec1 earnings health uninsured ybarcare, c
+codebook bmi age female raceb earnings health uninsured2 poor, c
 
 
 * Normality
@@ -177,7 +142,8 @@ hist bmi, bin(20) normal normopts(lp(dash)) ///
     kdensity kdenopts(k(biweight) bw(3) lc(black)) ///
     name(dv, replace)
 
-* Transformations (add 'g' to make the command -gladder- for a graphical check).
+* Transformations (add 'g' to make the command -gladder- for a graphical check, 
+* or 'q' to make the command -qladder- for quantile plots).
 ladder bmi
 
 * Log-BMI transformation.
@@ -236,30 +202,6 @@ tab raceb, su(bmi) // mean BMI at each health level
 bys raceb: ci bmi  // confidence bands
 
 
-* IV: Education
-* -------------
-
-* Shorter labels for a cleaner graph.
-la def edu 13 "Grade 12" 14 "Coll 1-3 yrs" 15 "Coll 4" 16 "Coll 5+"
-la val educrec1 edu
-
-* (Reminder on labels: the first command, -la def-, creates new labels for the
-* values of a variable; the second command, -la val-, assigns the value label
-* to the target variable, which is educrec1 in this example.)
-
-* Plot BMI groups for each educational level.
-spineplot bmi6 educrec1, scheme(burd6) ///
-    name(edu, replace)
-
-* Plot racial backgrounds for each educational level.
-spineplot raceb educrec1, ///
-	name(edu_race, replace)
-
-* 95% CI estimates:
-tab educrec1, su(bmi) // mean BMI at each education level
-bys educrec1: ci bmi  // confidence bands
-
-
 * IV: Income
 * ----------
 
@@ -271,10 +213,6 @@ la var inc "Total earnings ($)"
 spineplot raceb inc if inc > 0, xla(,alt axis(2)) ///
 	name(inc_race, replace)
 
-* Plot educational levels for each income band.
-spineplot educrec1 inc if inc > 0, scheme(burd4) xla(, alt axis(2)) ///
-	name(inc_edu, replace)
-
 * Plot income quartiles for each BMI group.
 gr box inc if inc > 0, over(bmi6) ///
 	name(inc, replace)
@@ -284,7 +222,7 @@ gr box bmi if inc > 0, over(inc) noout ///
 	name(bmi_inc, replace)
 
 * 95% CI estimates:
-tab inc, su(bmi) // mean BMI at each education level
+tab inc, su(bmi) // mean BMI in each income band
 bys inc: ci bmi  // confidence bands
 
 
@@ -292,26 +230,26 @@ bys inc: ci bmi  // confidence bands
 * --------------------
 
 * Plot BMI distribution for groups who have or do not have health coverage.
-kdensity bmi if uninsured == 1, addplot(kdensity bmi if uninsured == 2) ///
+kdensity bmi if uninsured2, addplot(kdensity bmi if !uninsured2) ///
 	legend(order(1 "Not covered" 2 "Covered") row(1)) ///
 	name(uninsured, replace)
 
 * Exploration:
-tab uninsured, su(bmi) // mean BMI at each health level
-bys uninsured: ci bmi  // confidence bands
+tab uninsured2, su(bmi) // mean BMI for each group
+bys uninsured2: ci bmi  // confidence bands
 
 
 * IV: Health affordability
 * ------------------------
 
-* Plot BMI distribution for groups who could or coult not afford medical care.
-kdensity bmi if ybarcare == 1, addplot(kdensity bmi if ybarcare == 2) ///
-	legend(order(1 "Could afford medical care" 2 "Could not") row(1)) ///
-	name(ybarcare, replace)
+* Plot BMI distribution for groups above and below the poverty threshold.
+kdensity bmi if poor, addplot(kdensity bmi if !poor) ///
+	legend(order(1 "Above" 2 "Below poverty threshold") row(1)) ///
+	name(poor, replace)
 
 * Exploration:
-tab ybarcare, su(bmi) // mean BMI at each health level
-bys ybarcare: ci bmi  // confidence bands
+tab poor, su(bmi) // mean BMI for each group
+bys poor: ci bmi  // confidence bands
 
 
 * =============================
@@ -331,7 +269,7 @@ bys ybarcare: ci bmi  // confidence bands
 
 stab using week5_stats.txt, replace ///
 	mean(bmi age) ///
-	prop(female raceb educrec1 earnings uninsured ybarcare)
+	prop(female raceb earnings uninsured2 poor)
 
 /* Syntax of the -stab- command:
 

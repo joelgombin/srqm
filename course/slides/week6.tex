@@ -6,7 +6,7 @@
   % Exercises
 
 \documentclass[t]{beamer}
-\usetheme{\usetheme{hkllite}}
+\usetheme{hkllite}
 
 \title{comparison}
 	\author{François Briatte \& Ivaylo Petev}
@@ -58,7 +58,7 @@
   \begin{frame}[plain, c]{}
 
 		\begin{center}
-			\href{http://www.phdcomics.com/comics.php?f=1563}{\includegraphics[width=\textwidth]{mad-men}}
+\includegraphics[width=\textwidth]{mad-men}
     \end{center}
 		  
   \end{frame}
@@ -198,9 +198,12 @@
         \begin{exampleblock}{Class exercise}
 								
 					\begin{itemize}
-						\item \texttt{use data/qog2011, clear}
-						\item \texttt{ttest gol\_enep, by(gol\_est2)}
-						\item \texttt{prtest no\_mes, by(gol\_polreg)}
+						\item \texttt{use data/nhis2009, clear}
+						\item \texttt{ttest height, by(sex)}
+						\item \texttt{drop if replace > 3}
+						\item \texttt{replace uninsured = uninsured - 1}
+						\item \texttt{la def	 uninsured 0 "Uninsured" 1 "Insured"}
+						\item \texttt{prtest uninsured, by(sex)}
 					\end{itemize}
 			
         \end{exampleblock}
@@ -292,9 +295,9 @@
 							
 				\item Analyze the frequencies and residuals with \texttt{tabchi}
 								
-				\item \texttt{use data/qog2011, clear}
-				\item \texttt{ttest gol\_enep, by(gol\_est2)}
-				\item \texttt{prtest no\_mes, by(gol\_polreg)}
+%				\item \texttt{use data/qog2013, clear}
+%				\item \texttt{ttest gol\_enep, by(gol\_est2)}
+%				\item \texttt{prtest no\_mes, by(gol\_polreg)}
 			
 			\end{itemize}
 
@@ -497,8 +500,7 @@
       \begin{itemize}
 	       \item Finish the do-file and read all comments at home.
 	       \item Catch up on all readings %
-				 	(see \href{http://f.briatte.org/teaching/quanti/}%
-				 	{course website}).
+				 	(see syllabus).
 	       \item Revise your code and paper after getting feedback.
       \end{itemize}
     \end{alertblock}

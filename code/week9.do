@@ -7,7 +7,7 @@ cap log using code/week9.log, replace
 
 /* ------------------------------------------ SRQM Session 9 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev and J. Gombin
 
  - TOPIC:  Fertility and Education, Part 3
 
@@ -21,10 +21,6 @@ cap log using code/week9.log, replace
    It also shows how to use the -estout- command to store and export the results
    of regression models.
    
-   For your second draft, go as far as possible with multiple linear regression.
-   Start with correlations if applicable, then go forward with simple linear
-   regressions (add scatterplots if your predictors are continuous).
-
    Follow the instructions from the draft paper template. If you manage to go as
    far as diagnosing your model, discuss them and add interaction terms if you
    detect issues of multicollinearity.
@@ -33,7 +29,7 @@ cap log using code/week9.log, replace
    variables that are (or are closer to being) categorical in nature, and will
    go deeper into the core mechanics of regression modelling.
 
-   Last updated 2013-08-17.
+   Last updated 2013-11-29.
 
 ----------------------------------------------------------------------------- */
 

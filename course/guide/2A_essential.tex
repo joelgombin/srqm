@@ -1,3 +1,4 @@
+% !TeX root = 0_build.tex
 %
 % 1
 %
@@ -5,56 +6,61 @@
 
 	%
 	%
-	\newthought{Start by recalling the principle of replication:} anyone must be able to reproduce your analysis from the original data. For that reason, you are going to record the modifications that you apply to the data in a do-file. That part of the code is the `data cleaning' or `data preparation' segment, which is also the stage of your analysis where you become familiar with the data.%
-	
-	Most importantly for you at that stage, replicability implies that you \hlred{\textbf{never overwrite the original dataset}: leave the data source intact}, and keep the zipped archives of original datasets as backup copies.%
-		%
-		\footnote{If you ever alter a course dataset by saving it with modifications, quit Stata and delete its \ext{.dta} file in the \data folder. The course setup program will restore a pristine copy of the data from the \ZIP archive when you reopen Stata.}%
-
-	%
-	%
-	\newthought{Now load a dataset.} Stata can load example data with the \cmd{sysuse} and \cmd{webuse} commands, as we previously saw with the \code{lifeexp} dataset at p.~\pageref{lifeexp}. The course provides its own teaching datasets, which can be loaded by passing their disk files to the \cmd{use} command.%
-		%
-		\footnote{The \cmd{use} command can also copy data from a \URL. As soon as the path to your data includes spaces, you will need to enclose it in double quotes. Stata looks for \ext{.dta} files by default, so the extension is not needed here because all course datasets are provided in Stata 9/10 format.}%
-
-	All datasets are in the \data folder and require that you specify that path to the \cmd{use} command to load correctly. The example below will load a course dataset and then replace it with another one:%
+  \newthought{This section shows how to manipulate datasets.} Start by opening the \ess:\\[1em]
 
 		\begin{docspec}
-			* Load the National Health Interview Survey, years 2000-2009.\\
-			use data/nhis2009, clear\\[1em]
+			* Load the \ess, Rounds 4 (2008).\\
+			use data/ess2008 if essround == 4 \& cntry == "FR", clear
+    \end{docspec}
+    
+		\includegraphics{use-ess}
 
-			* Load the European Social Survey, Round 4 (2008).\\
-			use data/ess2008, clear\\
-		\end{docspec}
-
-	The \opt{clear}{use} option ensures that Stata will load the data even if there is already modified data in memory. Because you are never going to save the data to intermediary stages, you are never going to lose anything crucial by doing so.%
-
-	Stata can only open one dataset at the time and opens data silently: if the operation succeeds, nothing is printed on screen, except for a short message if the dataset has been labelled by its creator. All datasets for this course are slightly modified versions of the original ones%
-		%
-		\footnote{See the course appendix at p.~\pageref{sec:data-sources}.} %
-		%
-		and will print a short message when opened:\\[1em]
-
-		\includegraphics{use-nhis-ess}
-
+  Notice that we are limiting the observations to a single country in a single survey round, as to get some data in the most basic cross-sectional structure. Similarly, when we use the \nhis, we limit the data to one year of data:%
+  
+    \begin{docspec}
+      * Load the \nhis, latest survey year.
+      use data/nhis9711 if year == 2011
+    \end{docspec}
+    
+  You can build small-scale comparisons through time and space, \eg by comparing respondents from 2002 with respondents from 2012 in the \gss:%
+  
+    \begin{docspec}
+      * Load the \gss, selected years.
+      use data/gss0012 if inlist(year, 2002, 2012)
+    \end{docspec}
+    
+  If you want to compare across countries from the \wvs or from the \ess, select a small number of cases out of the country code variables (consider three an operational maximum):%
+  
+    \begin{docspec}
+      * Load data for one country (using numeric code).\\%
+    	use data/wvs2000 if v2 == 4, clear\\[1em]%
+      %
+      * Load data for two countries (using names).\\%
+      use data/wvs2000, clear\\%
+      decode v2, gen(country)\\%
+      keep if inlist(country, "Iran", "Iraq")\\%
+      drop v2%
+    \end{docspec}
+    
 	%
 	%
-	\newthought{Take a look at the data.} Start by inspecting the dataset itself in the Data browser, which gives you a raw feel of the data in the `editor' layout that you know from spreadsheet editors. The \cmd{browse} command opens the Data Browser, and because the last dataset you opened was the \ess, it will show you the first rows and columns of \ESS Round~4 data:%
+	\newthought{Now take a look at the data.} Use the \cmd{browse} command to inspect the dataset in the Data Editor, which gives you a raw feel of the data in the `editor' layout that you know from spreadsheet editors:%
 
 		\begin{docspec}
 			browse
 		\end{docspec}
 
-	The \cmd{browse} command is an exploratory command: it is a convenience tool to open the Data Browser, which shows the data in a spreadsheet-like, read-only format. You do not need to write exploratory commands like \cmd{browse} to your do-file, they are only meant to help you visualize the raw data. The next command will load and show some raw data from the \qog dataset:\\[1em]%
+  Optionally, you could have added a selection of variables to the \cmd{browse} command in order to show only some columns of the dataset:\\[1em]%
 
 		\begin{docspec}
-			use data/qog2011, clear\\
-			browse
+			use data/qog2013, clear\\
+			browse ccode-version
+      browse cname unna\_pop
 		\end{docspec}
-	
-		\includegraphics{qog-browse-command}\\[1em]
 
-	This command is occasionally helpful to view the `top-left' of a dataset, where you can often see the unique identifiers of the data, like the version number of a dataset or the country codes and names in a country-level dataset. These identifiers are all present in the \QOG dataset:%
+	The \cmd{browse} command is an exploratory command: it is a convenience tool to look at the data in read-only mode. You do not need to write exploratory commands like \cmd{browse} to your do-file, they are only meant to help you visualize the raw data.%
+  	
+  You should now be looking at the `top-left' observations and variables of the \QOG dataset, where you can see some unique identifier variables, like the version number of a dataset or the numeric codes and names of the country observations (Figure~\ref{fig:qog-browse}).%
 
 		\begin{figure*}[h]
 			\includegraphics{qog-browse-screenshot}%
@@ -66,9 +72,8 @@
 	%
 	Notice the different variable colors used in the Data Browser: in Figure~\ref{fig:qog-browse}, numeric measures are shown in black, whereas text descriptions, called `strings' in computer environments, are shown in red. While numeric values can be referred to directly in computing environments, strings require to be enclosed in \texttt{"quotes"} to be recognized as such.%
 		
-	There is another kind of variable \emph{encoding} that combines numeric values and text labels by assigning numbers to categories, groups or response items, like 4 coding for `Strongly agree' or 0 for `Dictatorship'. These variables are shown in blue in the Data Browser, as illustrated with a different example:\\[1em]%
+	There is another kind of variable \emph{encoding} that combines numeric values and text labels by assigning numbers to categories, groups or response items, like 1 coding for `Strongly agree' and 5 for `Strongly disagree'. These variables are shown in blue in the Data Browser, as illustrated with the \gss:\\[1em]%
 
-		\includegraphics{gss-browse-command}\\[1em]%
 		%
 		\begin{figure*}[h]
 			\includegraphics{gss-browse-screenshot}%
@@ -78,35 +83,48 @@
 
 	In Figure~\ref{fig:gss-browse}, the blue color indicates that, for the \texttt{wrkstat} variable of the \gss, there is both a numeric coding scheme of the type 1, 2, etc., and a set of labels that correspond to employment categories: 1 for `Working full-time', 2 for `Working part-time', etc.%
 
-	In both Figure~\ref{fig:qog-browse} and Figure~\ref{fig:gss-browse}, some observations (rows of data) show values that start with a full period (\texttt{.}). This is how Stata codes missing values. This scheme is idiosyncratic, and missing values can be coded differently depending on the conventions used at the data collection stage.%
+	In Figures~\ref{fig:qog-browse} and \ref{fig:gss-browse}, some observations (rows of data) show values that start with a full period (\texttt{.}). This is how Stata codes \emph{missing values}. This scheme is idiosyncratic to Stata, and missing values can be coded differently (\eg by \texttt{NA}, \texttt{-1} or \texttt{999}) depending on the data collection protocol.%
 
 	%
 	%
-	\newthought{Now take a look at the values} by producing a quick data extract for a few variables and observations. Use the \cmd[li]{list} command followed by a few variable names and row numbers, from 1 to \texttt{\_N} where \texttt{\_N} is the total number of observations that you can get with the \cmd{count} command:%
+	\newthought{Let's take a closer look at the values} by producing quick data extracts from a few variables and observations. We are going to use the \cmd[li]{list} command with the \cmd{li}{list} command followed by a few variable names and row numbers, from 1 to \texttt{\_N} where \texttt{\_N} is the total number of observations that you can get with the \cmd{count} command:%
 
 		\begin{docspec}
-			* Load Quality of Government data (2011).\\
-			use data/qog2011, clear\\[1em]
+			* Load Quality of Government data (2013).\\
+			use data/qog2013, clear\\[1em]
 	
 			* Ask for the total number of observations.\\
 			count\\[1em]
 	
-			* Alternately, ask for the law row number.\\
+			* Alternately, ask for the "raw" result.\\
 			di \_N
 		\end{docspec}
 
-	Given its country-level unit of analysis, the \QOG dataset runs a smaller number of observations than the the other teaching datasets used in the course.%
-	  %
-		\footnote{A related specificity of the data is that it contains two different codings for Serbia, with and without Montenegro.}\\[1em]%
-		%
-		
 		\includegraphics{qog-use-count}\\[1em]
 
-Listing the data is done only for exploratory motives: do not send data listings to your results log. Just like the \cmd{browse} command, the \cmd[li]{list} command is a convenience tool to take a look at the raw data. We use it here to read ISO-3 country codes for a handful of countries:\footnote{You can pass variable names to the \cmd{browse} command to get a result similar to that of this \QOG example:%
+  %%%
+
+  \hlred{\textbf{Important:}} given its country-level unit of analysis, the \QOG dataset runs a smaller number of observations than the other teaching datasets used in the course. The largest possible sample of these countries is necessary to work with this dataset.%
+
+  Thus, if you are using country-level data, do \emph{not} attempt to subset the \qog dataset to a particular selection of countries. The sample size is already very low in a country-level cross-section, as there are just that many countries at a given point in time.%
+  
+  If you still wish to take geographical context into account in your analysis, use the \cmd{kountry}\pkgfirst{kountry} package as described at p.~\pageref{qog:geo} to add regional descriptors to the \qog dataset, and compare across all available regions.%
+
+  %%%
+  
+  \hlred{\textbf{Important:}} like the \cmd{browse} command, the \cmd[li]{list} command is just a convenience tool to take a look at the raw data. Listing the data is done only for exploratory motives: do not publish raw data listings or even save them to your log.%
+  
+  Similarly, when you are writing your analysis to a do-file, you do not need to make your code list the variables or the observations: describe only the parts of the data that are specifically relevant to your research, such as the names and labels of your selected variables.%
+
+  %%%
+  
+  Let's use the \cmd{browse} command to read a few variables by passing their names to the \cmd{browse} command:%
 		%
 		\begin{docspec}
-			browse cname-version
-		\end{docspec}}\\[1em]
+			browse cname-version\\
+		\end{docspec}
+
+%%%%%%%%%%fix!
 
 \begin{docspec}
 	* List first ten observations.\\
@@ -138,7 +156,7 @@ To find variables by name or keyword, use the \cmd{lookfor} command:\footnote{Yo
 		\end{docspec}}\\[1em]
 
 \begin{docspec}
-	use data/gss2010, clear\\
+	use data/gss0012, clear\\
 	lookfor homosex army
 \end{docspec}
 
@@ -147,33 +165,75 @@ To find variables by name or keyword, use the \cmd{lookfor} command:\footnote{Yo
 At that stage, in the best of cases, your variables of interest are ready for use, being present in the dataset in the format and with the descriptors that you want. An example would be this short selection of variables from the \QOG dataset:
 
 	\begin{docspec}
-		use data/qog2011, clear\\
+		use data/qog2013, clear\\
 		d cname ccodealp wdi\_fr wdi\_gdpc
 	\end{docspec}
 	
 	\includegraphics{qog-d}
 
-Just two things might need a bit of adjustment at that stage. First, you might want to change the \emph{variable names} to more familiar ones by using the \cmd[ren]{rename} command, which can work on groups of variables in Stata~12:
+Just two things might need a bit of adjustment at that stage. First, you might want to change the \emph{variable names} to more familiar ones by using the \cmd[ren]{rename} command. The command requires old and new variable names, and can work on many variables at the same time.%
+
+For example, in the \qog dataset, you might want to pick your own name for the country name variable, which is often used during analysis:%
 
 	\begin{docspec}
-		* Rename variables\\
-		ren (cname ccodealp wdi\_fr wdi\_gdpc bl\_asyt15) (country iso3c births gdpc schooling)\\
-		* Check result.\\
-		d country iso3c births gdpc
-	\end{docspec}
+    * Rename country name variable.
+    ren cname country
+  \end{docspec}
 
-The \cmd[ren]{rename} command succeeds silently, with no output:
+  The \cmd[ren]{rename} command succeeds silently, with no output:
 
+  %%fix: update
 	\includegraphics{qog-ren}
 
-\index{Variables!Labels}\index{Labels!For variables}%
-Then, you might also want to adjust \emph{variable labels}, which are the short pieces of text attached to each variable. Use the \cmd[la var]{label variable} command to change the variable label to something meaningful, \eg mentioning the unit of measurement of the variable. This example renames and relabels the \texttt{lrscale} variable in the \ess:
+\label{qog:geo}%
+Similarly, if you are interested in countries from a specific geographic region, you can obtain a simple continental from the \cmd{kountry} package, which creates a variable called \texttt{GEO} holding five UN~Stats standard regions.%
+  \footnote{The \qog dataset includes the \texttt{ht\_region} variable holding ten regions.} %
+  For consistency, we will rename the variable to lowercase:%
+
+  	\begin{docspec}
+      kountry ccode, from(iso3n) geo(un)\\
+      ren GEO geo
+    \end{docspec}
+
+% Note: this variable can later be used to measure regional specificities, but it does \emph{not} come with an intrinsic reason for inclusion into your research design: it is still left to you to support the hypothesis of meaningful geographical effects in your data.%
+  
+You might also want to use the \cmd{renvars} \pkgfirst{renvars} command to batch rename variables (which is something that Stata~12 also knows how to do, with more code). Use a backslash to separate the list of old and new variable names:%
 
 	\begin{docspec}
-		use data/ess2008, clear\\
-		ren lrscale rightwing\\
-		la var rightwing "Left-wing to right-wing (0-10)"
+    * Rename two WDI indicators.
+    renvars wdi\_fr wdi\_gdpc \textbackslash{} births gdpc
+		* Check result.\\
+		d country births gdpc
 	\end{docspec}
+
+\index{Variables!Labels}\index{Labels!For variables}%
+Then, you might also want to adjust \emph{variable labels}, which are the short pieces of text attached to each variable. Use the \cmd[la var]{label variable} command to change the variable label to something meaningful, \eg mentioning the unit of measurement of the variable.%
+
+\begin{mybox}
+  \paragraph{Example: political positioning (\ESS)}%
+    \label{ess:lrscale}%
+  %
+  The \texttt{lrscale} variable of the \ess is an 11-point self-placement scale measure of political position, from left-wing (\texttt{0}) to right-wing (\texttt{10}):%
+  
+	\begin{docspec}
+		use data/ess0810, clear\\
+    codebook lrscale, c
+  \end{docspec}
+
+  To remember that coding, we can rename the variable to the mnemonic \texttt{rightwing}, as to imply that the higher the value of the variable is, the more right-wing the respondent declared to be:%
+  
+	\begin{docspec}  
+		ren lrscale rightwing
+		la var rightwing "Left-wing to right-wing (0-10)"\\
+  \end{docspec}
+
+  The label makes certain that the coding will be unambiguous to the reader in the future. Relabelling the variable to indicate how the measure is to be interpreted is also useful to later include the variable in a descriptive table.%
+  
+	\begin{docspec}
+    d rightwing
+	\end{docspec}
+
+\end{mybox}
 
 It is generally a good idea to have variable labels that will provide something informative to graphs where they appear as axis titles. Short titles with some indication of the underlying coding scheme usually do the trick.
 
@@ -227,7 +287,7 @@ But then, you probably want to learn only about the three practical categories t
 	We can now use the \cmd[su]{summarize} command to get the average height (measured in inches) and weight (measured in pounds) of U.S. residents over the past decade or so:
 	
 	\begin{docspec}
-		use data/nhis2009, clear\\
+		use data/nhis9711, clear\\
 		su weight height
 	\end{docspec}
 		
@@ -271,7 +331,7 @@ But then, you probably want to learn only about the three practical categories t
 	\index{Variables!Dummies (binary variables)}%
 	\item[Dummies, or binary variables,] are categorical variables of the lowest possible dimensionality: they take only two values and therefore assert a logical statement: YES/NO, TRUE/FALSE, 0/1, male/female, married/single, democratic/dictatorial, etc. A convention is to name dummies after their true statement: a gender dummy called \texttt{female} codes 0 for `male' and 1 for `female'.
 	
-	The mean of a dummy is the fraction of the sample for which the logical statement is true. For example, if you code a dummy that holds 1 for `employed' and 0 for `unemployed' and the mean of that dummy, called \texttt{unemployed} so that its name denotes the true statement, is 0.18, then 18\% of the respondents have been reported or self-reported as unemployed (and the probability of being unemployed among the respondents is $Pr(\mathrm{unemployed}) = 0.18$. Dummies are particularly handy because of these `logical immediacy' characteristics.
+	The mean of a dummy is the fraction of the sample for which the logical statement is true. For example, if you code a dummy that holds 1 for `unemployed' and 0 for `employed' and the mean of that dummy, called \texttt{unemployed} so that its name denotes the true statement, is 0.18, then 18\% of the respondents have been reported or self-reported as unemployed (and the probability of being unemployed among the respondents is $Pr(\mathrm{unemployed}) = 0.18$. Dummies are particularly handy because of these `logical immediacy' characteristics.
 	
 	Here is an example of a \QOG dummy variable that codes for democratic status:\\[1em]
 	
@@ -345,7 +405,7 @@ Before you even start worrying about recoding continuous to categorical variable
 	A simple case of a missing value recode is when a variable needs to get trimmed from badly encoded missing values. Below is an example from the \NHIS dataset, where the last value for marital statuts is actually a missing value:
 
 	\begin{docspec}
-		use data/nhis2009, clear\\
+		use data/nhis9711, clear\\
 		fre marstat
 	\end{docspec}
 
@@ -369,8 +429,8 @@ Before you even start worrying about recoding continuous to categorical variable
 	When the variable does not have labels, you can be most straightforward and use the \cmd[gen]{generate} command to recode specific values to missing. Our example for such an operation shows the coding of the age variable in the \wvs:
 
 	\begin{docspec}
-		use data/wvs2000, clear\\
-		fre v225, r(7)
+		use data/ess0810, clear\\
+		fre edulvla, nomissing nowrap
 	\end{docspec}
 	
 	We use the \cmd{fre} command to diagnose the issue, passing the \coab{r}{rows}{fre} option in order to show only a few values instead of the full range from 15 to 99. Strangely enough, values 98 and 99 indicate missing data here:\\[1em]
@@ -380,8 +440,8 @@ Before you even start worrying about recoding continuous to categorical variable
 	This error can be fixed simply by recomputing an age variable that excludes the upper categories with the \cmd[gen]{generate} command, which duplicates the nonmissing values and allows to pick up a better name for the variable all at once:
 
 	\begin{docspec}
-		gen age = v225 if v225 < 98\\
-		fre age, r(7)
+		gen edu = edulvla if edulvla < 55\\
+		fre edu, nomissing nowrap
 	\end{docspec}
 
 \includegraphics{wvs-gen-age}\\[1em]
@@ -391,11 +451,11 @@ Before you even start worrying about recoding continuous to categorical variable
 	The \cmd{clonevar} and \cmd[gen]{generate} methods lose in efficiency if you are recoding missing values that follow the same coding scheme from one variable to another. The example below illustrates that situation with two \NHIS variables:\\[1em]
 
 	\begin{docspec}
-		use data/nhis2009, clear\\
-		fre ybarcare uninsured
+		use data/ess0810, clear\\
+		fre edulvla eisced, nomissing nowrap
 	\end{docspec}
 	
-	The\texttt{ybarcare} and \texttt{uninsured} are both using 7 and 9 as missing values.
+	The \texttt{pooryn} and \texttt{uninsured} are both using \texttt{9} as a missing value.
 	
 	\includegraphics{nhis-fre-ybarcare-uninsured}\\[1em]
 
@@ -403,10 +463,10 @@ Before you even start worrying about recoding continuous to categorical variable
 
 	\begin{docspec}
 		* Recode missing values of insurance and medical care.\\%
-		mvdecode ybarcare uninsured, mv(7 9)\\[1em]%
+		mvdecode edulvla eisced, mv(55)\\[1em]%
 		%
 		* Check results.\\%
-		fre ybarcare uninsured\\%
+		fre edulvla eisced, nomissing nowrap\\%
 	\end{docspec}
 	
 	Use this command with caution, as it makes it easy to recode erroneously, and systematically check your batch recodes:\\[1em]%
@@ -422,7 +482,7 @@ As previously with the female dummy recode from p.~\pageref{female-dummy} we hav
 \newthought{Once missing values are encoded}, you will have to subset your data, that is, to extract the set of observations for which no values are missing in the data. The \cmd{misstable pat} command provides a handy way to establish, as in the \ESS example below, the percentage of fuly measured observations:
 
 	\begin{docspec}
-		use data/ess2008, clear\\
+		use data/ess0810, clear\\
 		misstable pat agea gndr edulvla hinctnta
 	\end{docspec}
 	
@@ -433,7 +493,7 @@ As previously with the female dummy recode from p.~\pageref{female-dummy} we hav
 	The \cmd{misstable pat} command should be used at the right level of precision. For example, when working on comparative country case studies, you should specify each country separately to spot variations in missing values among the case studies:\\[1em]
 	
 	\begin{docspec}
-		use data/ess2008, clear\\[1em]%
+		use data/ess0810, clear\\[1em]%
 		%
 		* Missing values for Germany.\\%
 		misstable pat agea gndr edulvla hinctnta if cntry == "DE"\\[1em]%

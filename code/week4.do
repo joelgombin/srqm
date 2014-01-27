@@ -7,15 +7,11 @@ cap log using code/week4.log, replace
 
 /* ------------------------------------------ SRQM Session 4 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev and J. Gombin
 
  - TOPIC:  Social Determinants of Adult Obesity in the United States
 
  - DATA:   U.S. National Health Interview Survey (2009)
-
- - Since last week, you should now know what dataset and variables you plan to
-   use for your research project. Please register your project online by writing
-   your names, keywords, data source and class ID to the student projects table.
 
  - This week focuses on inspecting the normality of your dependent variable. The
    DV should be continuous for best results, or at least pseudo-continuous like
@@ -34,22 +30,21 @@ cap log using code/week4.log, replace
 
 ----------------------------------------------------------------------------- */
 
-* Load NHIS dataset.
-use data/nhis2009, clear
+* Load NHIS data for latest survey year.
+use data/nhis9711 if year == 2011, clear
 
-* Subset to most recent year.
-drop if year != 2009
+* Set individual survey weights.
+svyset psu [pw = perweight], strata(strata)
 
 
 * Dependent variable: Body Mass Index
 * -----------------------------------
 
-* Compute the Body Mass Index.
-gen bmi = weight * 703 / height^2
+gen bmi = weight * 703 / height^2 if weight < 996 & height < 96
 la var bmi "Body Mass Index"
 
-* Weight the data with NHIS individual weights.
-svyset psu [pw = perweight], strata(strata)
+* Detailed summary statistics.
+su bmi, d
 
 
 * Independent variables
@@ -64,7 +59,7 @@ fre raceb
 fre earnings
 
 * The default -tab- command returns similar results, minus value labels.
-tab sex
+
 
 * High-dimensional, continuous variables.
 fre bmi, rows(30)
@@ -182,12 +177,12 @@ su bmi if bmi < q1 - 3 * iqr   | bmi > q3 + 3 * iqr
 * We draw a histogram with three different elements: the actual bins (bars)
 * of the BMI variable, its kernel density, and an overimposed normal curve
 * that we draw in a different colour using a few graph options.
-hist bmi, bin(15) normal kdensity kdenopts(lp(dash) lc(black) bw(1.5)) ///
+hist bmi, bin(40) normal kdensity kdenopts(lp(dash) lc(black) bw(1.5)) ///
 	note("Normal distribution (solid red) and kernel density (dashed black).") ///
 	name(bmi, replace)
 
 * The histogram shows what we knew from reading the mean and median of the
-* BMI values: the distribution is skewed to the left, implying that there are
+* BMI values: the distribution is skewed to the right, implying that there are
 * more observations below the mean of the distribution than above it.
 
 * As a result, the distribution is asymmetrical, which we can verify using a
@@ -307,12 +302,15 @@ ci bmi
 * Mean BMI for the full sample with a 99% CI (more confidence, less precision).
 ci bmi, level(99)
 
-* Mean BMI for the full sample with survey weights (better representativeness).
+* Mean BMI for full sample with survey design weights (as set earlier).
 svy: mean bmi
+
+* Mean BMI for full sample with ajusted sample weights.
+mean bmi [pw = sampweight]
 
 * The confidence intervals for the full sample show a high precision, both at
 * the 95% (alpha = 0.05) and 99% (alpha = 0.01) levels. This is due to the high
-* number of observations provided for the BMI variable.
+* number of observations available for the BMI variable.
 
 * If we compute the average BMI for subsamples of the population, such as one
 * category of the population, the total number of observations will drop and
@@ -340,22 +338,18 @@ gr dot bmi, over(sex) over(yrsinus) over(raceb) asyvars scale(.7) ///
 * so little observations that the difference should not be considered.
 bys sex: ci bmi if raceb == 2 & yrsinus == 1
 
-* Identically, the seemingly clean pattern among male and sex Asians is
+* Identically, the seemingly clean pattern among male and female Asians is
 * calculated on a low number of observations and requires verification of
 * the confidence intervals. The pattern appears to be rather robust.
-bys yrsinus: ci bmi if raceb == 4
+bys sex: ci bmi if raceb == 4
 
 
 * Confidence intervals with proportions
 * -------------------------------------
 
 * A few things about confidence intervals with proportions, for which confidence
-* bands follow a different method of calculation. Basically, categorical data is
-* just dummies for a bunch of categories, and the distribution of binary data
-* can hardly be normal. The binomial distributions applies instead.
-ci sex, binomial
-
-* Categorical variables, which can be described through proportions, also
+* bands follow a different method of calculation. Categorical variables, 
+* which can be described through proportions, also
 * come with confidence intervals that reflect the range of values that each
 * category might take in the true population. The proportions of ethnic groups
 * in the U.S., for instance, are somehwere in these intervals:

@@ -7,7 +7,7 @@ cap log using code/week3.log, replace
 
 /* ------------------------------------------ SRQM Session 3 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev and J. Gombin
 
  - TOPIC:  Support for Sharia Law in Nine Countries
 
@@ -45,7 +45,7 @@ cap log using code/week3.log, replace
    detail, and another draft paragraph that lists your independent variables and
    offers a general theory on the articulation between your variables.
 
-   Last updated 2013-08-17.
+   Last updated 2013-09-26.
 
 ----------------------------------------------------------------------------- */
 
@@ -109,6 +109,7 @@ recode sharia ///
 	(1/2 = 1 "Support") ///
 	(4/5 = 0 "Oppose") ///
 	(else = .), gen(prosharia)
+
 la var prosharia "Legislative enforcement of sharia (0/1)"
 fre prosharia
 
@@ -188,7 +189,7 @@ fre v223
 * Recode gender as a meaningful binary (either female or not) using a logical
 * operator (in brackets), excluding missing observations from the operation and
 * applying the 'female' label to the new 'female' dummy variable:
-gen female:female = (v223 == 1) if !mi(v223)
+gen female:female = (v223 == 2) if !mi(v223)
 
 * Label the values.
 la def female 0 "Male" 1 "Female", replace

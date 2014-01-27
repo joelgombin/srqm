@@ -1,20 +1,22 @@
+% !TeX program = pdflatex
+% !TeX spellcheck = english
+
 \documentclass[a4paper, nobib, nofonts, notoc]{tufte-book}
 
 	\title{Stata for Social Scientists}
 	\author{François Briatte}
 	\publisher{\url{http://f.briatte.org/teaching/quanti/}}
 
+  % Filter out unwanted warnings and error messages
+  \usepackage{silence}
+    \WarningFilter{latex}{Marginpar}
+
 	\input{config/sty} % style
 	\input{config/lex} % word shortcuts
 	\input{config/doc} % documentation index
   
   \usepackage{hyphenat}
-  \usepackage[
-    style=mla,
-    autocite=footnote,
-    guessmedium=false,
-    backend=biber
-  ]{biblatex}
+  \usepackage[style=mla, autocite=footnote, backend=biber]{biblatex}
   \addbibresource{references.bib}
 
 \begin{document}
@@ -32,8 +34,6 @@
 	
 \mainmatter %% r-7
 
-  %
-  %
   \input{1_intro}         %% ... session 1 (course, toc)    ... incl. setup and coursework
 	
   % 1) data visualization
@@ -54,17 +54,6 @@
 \backmatter
 
   \appendix
-
-  % A1. on computers
-  %
-  \input{A_computers}
-  
-  % A2. course datasets
-  % 
-  % \input{A_sources}
-
-  % A3. math recap
-  % 
   \input{A_math}
 
 \printbibliography%

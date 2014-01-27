@@ -3,7 +3,7 @@
 cap pr drop srqm_scan
 program srqm_scan
   syntax [anything] [, force]
-  glo srqm_datasets = "ess2008 gss0012 nhis2009 qog2013 wvs2000"
+  glo srqm_datasets = "ess0810 gss0012 nhis9711 qog2013 wvs2000"
   glo srqm_folders = "code data"
 
   di as txt _n "Working directory:" as txt _n "{browse `c(pwd)'}"
@@ -31,7 +31,7 @@ program srqm_scan
                   di as err _n "Error: neither `d'.dta or `d'.zip", ///
                       "could be located" _n "in the `1' folder"
                   qui cd ..
-                  exit -1
+                  exit -2
               }
           }
           cap noi ls *.dta, w

@@ -7,14 +7,14 @@ cap log using code/week7.log, replace
 
 /* ------------------------------------------ SRQM Session 7 -------------------
 
-   F. Briatte and I. Petev
+   F. Briatte, I. Petev & Joel Gombin
 
  - TOPIC:  Fertility and Education, Part 1
 
  - DATA:   Quality of Government (2013)
 
    This do-file is the last one that we will run on the topic of association.
-   You are expected to submit the second draft of your work very soon: the draft
+   You are expected to submit the second draft of your work in less than a month: the draft
    paper that you will be submitting will be mostly significance tests, so make
    sure that you have done all the necessary readings and practice by then.
    
@@ -28,7 +28,7 @@ cap log using code/week7.log, replace
    on interpreting rather than coding. Use the course material to bring yourself
    up to speed with both Stata and essential statistical theory.
 
-   Last updated 2013-08-17.
+   Last updated 2013-10-25.
 
 ----------------------------------------------------------------------------- */
 
@@ -107,7 +107,7 @@ sc log_gdpc schooling, ///
 su log_gdpc schooling
 
 * Visual inspection of the relationship within the mean-mean quadrants.
-sc log_gdpc schooling, yline(7.5) xline(6) ///
+sc log_gdpc schooling, yline(8.2) xline(7.8) ///
 	name(log_gdpc_schooling, replace)
 
 * Verify inspection computationally.
@@ -142,14 +142,14 @@ pwcorr corruption hdi, obs sig
 su femparl corruption
 
 * Visual inspection of the relationship within the mean-mean quadrants.
-sc femparl corruption, yline(15) xline(4) ///
+sc femparl corruption, yline(16.3) xline(4) ///
 	name(femparl_corruption, replace)
 
 * No clear pattern emerges from the scatterplot above. Never force a pattern
 * onto the data: relationships should be apparent, not constructed. If there is
 * no straightforward relationship, disregard it. Identically, never include a
 * graph in your work if the relationship that it intends to show will not
-* strike the reader between the eyes (i.e. run an intra-ocular trauma test).
+* strike the reader between the eyes.
 * Inconclusive visual inspection can come with significant correlations, as is
 * the case here if you actually compute the coefficient, but visual inspection
 * and theoretical elaboration provide no substantive justification for it.
@@ -167,7 +167,6 @@ sc femparl corruption, yline(15) xline(4) ///
 * A scatterplot matrix contains all possible bivariate relationships between
 * any number of variables. Building a matrix of your DV and IVs allows to spot
 * relationships between IVs, which will be useful later on in your analysis.
-* Note that the example below shows the untransformed measure of GDP per capita.
 gr mat births schooling log_gdpc corruption femparl, ///
 	name(gr_matrix, replace)
 
